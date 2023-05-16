@@ -2,6 +2,9 @@
 __pycache__
 dist
 *.egg-info
+/portia/assets
+/portia/templates
+
 # Logs
 logs
 *.log

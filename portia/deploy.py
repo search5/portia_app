@@ -1,6 +1,7 @@
 import nodeenv
-import os
+from pathlib import Path
 from subprocess import run, PIPE
+import shutil
 
 def nodejs_setup():
     print("Node.JS Install")
@@ -21,3 +22,15 @@ def nodejs_setup():
     run(["npm", "install"], stdout=PIPE, stderr=PIPE)
 
     return True
+
+def frontend_ready():
+    portia_dir = Path("portia")
+    portia_assets_dir = portia_dir / "assets"
+    portia_templates_dir = portia_dir / "templates"
+
+    portia_templates_dir.mkdir(exist_ok=True)
+    if portia_assets_dir.exists():
+        shutil.rmtree(portia_assets_dir)
+    
+    shutil.copy("portia_web/dist/index.html", portia_templates_dir / "index.html")
+    shutil.copytree("portia_web/dist/assets", "portia/assets")

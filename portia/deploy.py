@@ -1,9 +1,26 @@
+import click
 import nodeenv
+import shutil
+import os
 from pathlib import Path
 from subprocess import run, PIPE
-import shutil
+from flask.cli import FlaskGroup
+from portia.factory import create_app as portia_app
 
+
+def create_app():
+    return portia_app(os.getenv("PORTIA_CONFIG", "../config.json"))
+
+
+@click.group(cls=FlaskGroup, create_app=create_app)
+def cli():
+    """Management script for the Wiki application."""
+
+
+@cli.command()
 def nodejs_setup():
+    """Node.JS Installation"""
+
     print("Node.JS Install")
     print("-" * 80)
     parser = nodeenv.make_parser()
@@ -23,7 +40,11 @@ def nodejs_setup():
 
     return True
 
+
+@cli.command()
 def frontend_ready():
+    """Vite.js Build File to portia_app"""
+
     portia_dir = Path("portia")
     portia_assets_dir = portia_dir / "assets"
     portia_templates_dir = portia_dir / "templates"
@@ -33,4 +54,22 @@ def frontend_ready():
         shutil.rmtree(portia_assets_dir)
     
     shutil.copy("portia_web/dist/index.html", portia_templates_dir / "index.html")
-    shutil.copytree("portia_web/dist/assets", "portia/assets")
+    shutil.copytree("portia_web/dist/assets", "portia/static")
+
+
+@cli.command()
+def init_db():
+    """Database Initialize"""
+
+    # import social_login.models 
+    from social_flask_sqlalchemy import models    
+    from portia.models import db
+
+    print(db.engine)
+
+    # models.PSABase.metadata.create_all(engine)
+    # Base.metadata.create_all(bind=engine)
+
+
+if __name__ == "__main__":
+    cli()

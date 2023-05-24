@@ -40,4 +40,3 @@ def do_login(backend, user, social_user):
     print(user)
     print(type(user))
     return create_access_token(identity=user)
-    # return login_user(user, remember=remember)

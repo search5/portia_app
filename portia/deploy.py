@@ -61,14 +61,14 @@ def frontend_ready():
 def init_db():
     """Database Initialize"""
 
-    # import social_login.models 
     from social_flask_sqlalchemy import models    
     from portia.models import db
 
-    print(db.engine)
+    models.PSABase.metadata.create_all(db.engine)
 
-    # models.PSABase.metadata.create_all(engine)
-    # Base.metadata.create_all(bind=engine)
+    app = create_app()
+    with app.app_context():
+        db.create_all()
 
 
 if __name__ == "__main__":

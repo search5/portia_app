@@ -14,3 +14,10 @@ class User(db.Model, JSONMixin):
     id = db.Column(db.String(20), primary_key=True, nullable=False)
     name = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(40), nullable=False)
+    email = db.Column(db.String(75), nullable=False)
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True

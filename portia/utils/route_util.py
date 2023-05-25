@@ -19,8 +19,13 @@ def common_context(authentication_backends, strategy, user=None, **extra):
         'associated': {}
     }
 
+    print(user)
+
     if user and is_authenticated(user):
         context['associated'] = dict((association.provider, association)
                                      for association in associations(user, strategy))
 
+    print('-' * 80)
+    print(extra)
+    print('-' * 80)
     return dict(context, **extra)

@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
@@ -10,11 +11,12 @@ class JSONMixin:
                 for c in inspect(self).mapper.column_attrs}
 
 
-class User(db.Model, JSONMixin):
-    id = db.Column(db.String(20), primary_key=True, nullable=False)
-    name = db.Column(db.String(20), nullable=False)
-    password = db.Column(db.String(40), nullable=False)
-    email = db.Column(db.String(75), nullable=False)
+class User(db.Model, UserMixin, JSONMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(200))
+    name = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), nullable=False)
 
     def is_authenticated(self):
         return True

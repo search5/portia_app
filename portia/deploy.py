@@ -46,7 +46,7 @@ def frontend_ready():
     """Vite.js Build File to portia_app"""
 
     portia_dir = Path("portia")
-    portia_assets_dir = portia_dir / "assets"
+    portia_assets_dir = portia_dir / "static"
     portia_templates_dir = portia_dir / "templates"
 
     portia_templates_dir.mkdir(exist_ok=True)
@@ -64,11 +64,10 @@ def init_db():
     from social_flask_sqlalchemy import models    
     from portia.models import db
 
-    models.PSABase.metadata.create_all(db.engine)
-
     app = create_app()
     with app.app_context():
         db.create_all()
+        models.PSABase.metadata.create_all(db.engine)
 
 
 if __name__ == "__main__":

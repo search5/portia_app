@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "production": "cp -r dist/assets ../portia/ && cp -r dist/manifest.json ../portia/lib"
   },
   "dependencies": {
     "pinia": "^2.0.36",

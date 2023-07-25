@@ -2,6 +2,8 @@ import nodeenv
 from pathlib import Path
 from subprocess import run, PIPE
 import shutil
+import os
+
 
 def nodejs_setup():
     print("Node.JS Install")
@@ -22,6 +24,7 @@ def nodejs_setup():
     run(["npm", "install"], stdout=PIPE, stderr=PIPE)
 
     return True
+
 
 def frontend_ready():
     portia_dir = Path("portia")

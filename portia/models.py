@@ -12,7 +12,7 @@ class JSONMixin:
 
 class User(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
-    username = db.Column(db.String(200))
+    username = db.Column(db.String(200), unique=True)
     name = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False)

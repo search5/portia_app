@@ -1,3 +1,4 @@
+import bcrypt
 import click
 import nodeenv
 import shutil
@@ -6,6 +7,7 @@ from pathlib import Path
 from subprocess import run, PIPE
 from flask.cli import FlaskGroup
 from portia.factory import create_app as portia_app
+from portia.models import User
 
 
 def create_app():
@@ -68,6 +70,21 @@ def init_db():
     with app.app_context():
         db.create_all()
     #     models.PSABase.metadata.create_all(db.engine)
+
+
+@cli.command()
+def init_user():
+    """Initialize User"""
+    from portia.models import db
+    encrypt_password = bcrypt.hashpw('jiho'.encode('utf-8'), bcrypt.gensalt())
+
+    app = create_app()
+    with app.app_context():
+        user = User(username='jiho', password=encrypt_password.decode('utf-8'), is_admin='Y',
+                    join_date=db.func.now(), name='이지호',
+                    email='search5@gmail.com')
+        db.session.add(user)
+        db.session.commit()
 
 
 if __name__ == "__main__":

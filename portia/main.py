@@ -1,24 +1,31 @@
 import os
 
-from flask import render_template, redirect, request, jsonify
+import bcrypt
+from flask import redirect, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
 
 from portia.factory import create_app
+from portia.models import db, User
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 
 
-@app.route("/api/login")
+@app.route("/api/login", methods=["PATCH"])
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
 
-    if username != "test" or password != "test":
+    user = db.session.execute(
+        db.select(User).filter(User.username == username)).first()
+    password_encoded = password.encode('utf-8')
+
+    if not (user and (bcrypt.checkpw(password_encoded, user[0].password.encode('utf-8')))):
         return jsonify({"msg": "Bad username or password"}), 401
 
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)
-    return jsonify(access_token=access_token)
+
+    return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
 @app.route("/api/protected", methods=["GET"])

@@ -69,7 +69,6 @@ def init_db():
     app = create_app()
     with app.app_context():
         db.create_all()
-    #     models.PSABase.metadata.create_all(db.engine)
 
 
 @cli.command()

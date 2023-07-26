@@ -11,19 +11,4 @@ def create_app(config_filename):
     jwt = JWTManager(app)
     db.init_app(app)
 
-    # @jwt.encode_key_loader
-    # def encode_key_loader(value):
-    #     print('=' * 80)
-    #     print(value)
-    #     print('=' * 80)
-    #     return 'abc'
-    #
-    # @jwt.decode_key_loader
-    # def decode_key_loader(header, payload):
-    #     print('-' * 80)
-    #     print(header)
-    #     print(payload)
-    #     print('-' * 80)
-    #     return 'abc'
-
     return app

@@ -1,0 +1,50 @@
+<script>
+import {defineComponent} from 'vue'
+
+export default defineComponent({
+  name: "TopMenuView"
+})
+</script>
+
+<template>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">KNOU 쇼핑몰</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+            <a class="nav-link" href="/">처음 화면
+            <span class="sr-only">(current)</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/goods">상품 목록</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/join">회원 가입</a>
+        </li>
+        {% if not session.email %}
+        <li class="nav-item">
+            <a class="nav-link" href="/login">로그인</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="/logout">로그아웃</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/basket">장바구니</a>
+        </li>
+        {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<style lang="scss" scoped>
+
+</style>

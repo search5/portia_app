@@ -11,6 +11,7 @@
     "production": "cp -r dist/assets ../portia/ && cp -r dist/manifest.json ../portia/lib"
   },
   "dependencies": {
+    "bootstrap": "^5.3.1",
     "pinia": "^2.0.36",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
@@ -22,6 +23,8 @@
     "eslint": "^8.39.0",
     "eslint-plugin-vue": "^9.11.0",
     "prettier": "^2.8.8",
+    "sass": "^1.64.1",
+    "sass-loader": "^13.3.2",
     "vite": "^4.3.5"
   }
 }

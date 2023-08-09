@@ -41,41 +41,42 @@ export default defineComponent({
 </script>
 
 <template>
-<div>
-  <TopMenuView></TopMenuView>
+  <div>
+    <TopMenuView></TopMenuView>
 
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 mb-4" :key="index" v-for="(item, index) in goods">
-            <div class="card h-100">
-              <a href="#"><img class="card-img-top" :src="item.thumbnail" alt=""></a>
-              <div class="card-body">
-                <h4 class="card-title">
-                  <a :href="'/goods/' + item.id">{{ item.goods_name }} </a>
-                </h4>
-                <h5>{{ number_format(item.price) }}</h5>
-                <p class="card-text">{{ item.goods_description }}</p>
-              </div>
-              <div class="card-footer">
-                <small class="text-muted" :key="index" v-for="(val, index) in range(item.goods_ranking)">
-                  &#9733;
-                </small>
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4" :key="index" v-for="(item, index) in goods">
+              <div class="card h-100">
+                <a href="#"><img class="card-img-top" :src="item.thumbnail" alt=""></a>
+                <div class="card-body">
+                  <h4 class="card-title">
+                    <a :href="'/goods/' + item.id">{{ item.goods_name }} </a>
+                  </h4>
+                  <h5>{{ number_format(item.price) }}</h5>
+                  <p class="card-text">{{ item.goods_description }}</p>
+                </div>
+                <div class="card-footer">
+                  <small class="text-muted" :key="index" v-for="(val, index) in range(item.goods_ranking)">
+                    &#9733;
+                  </small>
 
-                <small class="text-muted" :key="index" v-for="(val, index) in range(5- item.goods_ranking)">
-                  &#9734;
-                </small>
+                  <small class="text-muted" :key="index" v-for="(val, index) in range(5- item.goods_ranking)">
+                    &#9734;
+                  </small>
+                </div>
               </div>
             </div>
           </div>
+          <!-- /.row -->
         </div>
-        <!-- /.row -->
       </div>
     </div>
+
+    <FooterView></FooterView>
   </div>
-  <FooterView></FooterView>
-</div>
 </template>
 
 <style scoped>

@@ -15,7 +15,9 @@ export default defineComponent({
 
     <ul class="nav nav-pills">
       <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">처음 화면</a></li>
-      <li class="nav-item"><a href="#" class="nav-link">상품 목록</a></li>
+      <li class="nav-item">
+        <RouterLink :to="{name: 'goods_list'}" class="nav-link">상품 목록</RouterLink>
+      </li>
       <li class="nav-item"><a href="#" class="nav-link">회원 가입</a></li>
       <li class="nav-item"><a href="#" class="nav-link">로그인</a></li>
       <li class="nav-item"><a href="#" class="nav-link">장바구니</a></li>

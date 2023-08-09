@@ -3,9 +3,51 @@ import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
 
+import { Carousel } from 'bootstrap';
+import {range} from "lodash-es";
+
 export default defineComponent({
   name: "IndexView",
-  components: {FooterView, TopMenuView}
+  components: {FooterView, TopMenuView},
+  data: () => ({
+    carousel_images: [
+      {src: 'http://placehold.it/800x400', alt: '1'},
+      {src: 'http://placehold.it/800x400', alt: '2'},
+      {src: 'http://placehold.it/800x400', alt: '3'}
+    ],
+    goods: [
+      {
+        id: 1,
+        thumbnail: 'http://placehold.it/700x400',
+        goods_name: '상품 1',
+        price: 30000,
+        goods_description: '올바른 상품입니다',
+        goods_ranking: 3
+      }, {
+        id: 2,
+        thumbnail: 'http://placehold.it/700x400',
+        goods_name: '상품 2',
+        price: 28000,
+        goods_description: '잘나가는 책입니다',
+        goods_ranking: 4
+      }
+    ],
+    iobj: {
+      number_format: new Intl.NumberFormat()
+    }
+  }),
+  methods: {
+    number_format(value) {
+      return this.iobj.number_format.format(value)
+    },
+    range (value) {
+      return range(value)
+    }
+  },
+  mounted() {
+    // const carousel = new Carousel('#carouselExampleControls')
+    // console.log(carousel)
+  }
 })
 </script>
 
@@ -58,60 +100,48 @@ export default defineComponent({
       <!-- /.col-lg-3 -->
 
       <div class="col-lg-9">
-        <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
-          <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-          </ol>
-          <div class="carousel-inner" role="listbox">
-            <div class="carousel-item active">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="First slide">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Second slide">
-            </div>
-            <div class="carousel-item">
-              <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Third slide">
+        <div id="carouselExampleIndicators" class="carousel slide mb-2" data-bs-ride="true">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" :data-bs-slide-to="index" :class="{active: index === 0}" :aria-current="{active: index === 0 ? 'true' : ''}" :aria-label="'Slide ' + (index + 1)" v-for="(item, index) in carousel_images" :key="index"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item" :class="{active: index === 0}" v-for="(item, index) in carousel_images" :key="index">
+              <img :src="item.src" class="d-block w-100" :alt="item.alt">
             </div>
           </div>
-          <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="visually-hidden">이전</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
+            <span class="visually-hidden">다음</span>
+          </button>
         </div>
-<!---->
+
         <div class="row">
-<!---->
-<!--          {% for item in goods %}-->
-          <div class="col-lg-4 col-md-6 mb-4">
+
+          <div class="col-lg-4 col-md-6 mb-4" :key="index" v-for="(item, index) in goods">
             <div class="card h-100">
-              <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+              <a href="#"><img class="card-img-top" :src="item.thumbnail" alt=""></a>
               <div class="card-body">
                 <h4 class="card-title">
-                  <a href="/goods/{{ item.id }}">{{ item.goods_name }} </a>
+                  <a :href="'/goods/' + item.id">{{ item.goods_name }} </a>
                 </h4>
-                <h5>{{ '%d' | format(item.price) }}</h5>
+                <h5>{{ number_format(item.price) }}</h5>
                 <p class="card-text">{{ item.goods_description }}</p>
               </div>
               <div class="card-footer">
-                <small class="text-muted">
-<!--                  {% for item in range(item.goods_ranking) %}-->
-<!--                  &#9733;-->
-<!--                  {% endfor %}-->
-<!---->
-<!--                  {% for item in range(5 - item.goods_ranking) %}-->
-<!--                    &#9734;-->
-<!--                  {% endfor %}-->
+                <small class="text-muted" :key="index" v-for="(val, index) in range(item.goods_ranking)">
+                  &#9733;
+                </small>
+
+                <small class="text-muted" :key="index" v-for="(val, index) in range(5- item.goods_ranking)">
+                  &#9734;
                 </small>
               </div>
             </div>
           </div>
-<!--          {% endfor %}-->
         </div>
         <!-- /.row -->
 

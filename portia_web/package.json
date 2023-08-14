@@ -11,6 +11,11 @@
     "production": "cp -r dist/assets ../portia/ && cp -r dist/manifest.json ../portia/lib"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
     "bootstrap": "^5.3.1",
     "lodash-es": "^4.17.21",
     "pinia": "^2.0.36",

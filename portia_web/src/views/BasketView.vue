@@ -68,7 +68,6 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <!--<script src="https://use.fontawesome.com/c560c025cf.js"></script>-->
     <div class="container mb-3">
       <div class="card shopping-cart">
   <!--        {% with messages = get_flashed_messages() %}-->
@@ -84,9 +83,9 @@ export default defineComponent({
   <!--        {% endwith %}-->
 
         <div class="card-header bg-dark text-light">
-          <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+          <font-awesome-icon icon="fa-solid fa-shopping-cart" />
           장바구니
-          <RouterLink :to="{name: 'goods_list'}" class="btn btn-outline-info btn-sm pull-right">계속 쇼핑하기</RouterLink>
+          <RouterLink :to="{name: 'goods_list'}" class="btn btn-outline-info btn-sm fa-pull-right">계속 쇼핑하기</RouterLink>
           <div class="clearfix"></div>
         </div>
         <div class="card-body">
@@ -97,14 +96,14 @@ export default defineComponent({
               <div class="col-12 col-sm-12 col-md-2 text-center">
                 <img class="img-responsive" :src="item.thumbnail" alt="prewiew" width="120" height="80">
               </div>
-              <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+              <div class="col-12 text-sm-center col-sm-12 text-md-start col-md-6">
                 <h4 class="product-name"><strong>{{ item.goods_item.goods_name }}</strong></h4>
                 <h4>
                   <small>{{ item.goods_item.goods_description }}</small>
                 </h4>
               </div>
-              <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
-                <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+              <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-end row">
+                <div class="col-3 col-sm-3 col-md-6 text-md-end" style="padding-top: 5px">
                   <h6><strong>{{ item.goods_item.price }} <span class="text-muted">x</span></strong></h6>
                 </div>
                 <div class="col-4 col-sm-4 col-md-4">
@@ -118,7 +117,7 @@ export default defineComponent({
                 </div>
                 <div class="col-2 col-sm-2 col-md-2 text-right">
                   <button type="button" class="btn btn-outline-danger btn-xs" @click="basket_delete('{{ item.id }}')">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    <font-awesome-icon icon="fa-solid fa-trash" />
                   </button>
                 </div>
               </div>
@@ -126,17 +125,17 @@ export default defineComponent({
             <hr>
             <!-- END PRODUCT -->
 
-            <div class="pull-right">
-              <a href="#" @click="basket_update" class="btn btn-outline-secondary pull-right">
+            <div class="fa-pull-right">
+              <a href="#" @click="basket_update" class="btn btn-outline-secondary fa-pull-right">
                 장바구니 업데이트
               </a>
             </div>
           </form>
         </div>
         <div class="card-footer">
-          <div class="pull-right" style="margin: 10px">
-            <a href="#" @click="payment" class="btn btn-success pull-right">결제하기</a>
-            <div class="pull-right" style="margin: 5px">
+          <div class="fa-pull-right" style="margin: 10px">
+            <a href="#" @click="payment" class="btn btn-success fa-pull-right">결제하기</a>
+            <div class="fa-pull-right" style="margin: 5px">
               Total price: <b>{{ number_format(total_money) }}</b>
             </div>
           </div>

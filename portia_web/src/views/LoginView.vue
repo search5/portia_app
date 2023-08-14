@@ -53,7 +53,7 @@ export default defineComponent({
                 <input type="password" class="form-control" name="password" placeholder="Password" required="required" v-model="input_data.password">
               </div>
               <div class="mb-3 clearfix">
-                <button type="button" class="btn btn-primary pull-right" @click="login">로그인 하기</button>
+                <button type="button" class="btn btn-primary fa-pull-right" @click="login">로그인 하기</button>
               </div>
             </form>
             <div class="hint-text">계정이 없으면 가입하시겠어요? <RouterLink :to="{name: 'portia_join'}">가입하러 가기</RouterLink></div>

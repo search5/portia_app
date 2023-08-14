@@ -104,7 +104,7 @@ export default defineComponent({
 
                     <hr>
 
-                    <a href="#" @click="basket_add" class="btn btn-outline-primary text-uppercase"> <i class="fas fa-shopping-cart"></i> 장바구니에 담기 </a>
+                    <a href="#" @click="basket_add" class="btn btn-outline-primary text-uppercase"> <font-awesome-icon icon="fa-solid fa-shopping-cart" /> 장바구니에 담기 </a>
                   </article> <!-- card-body.// -->
                 </aside> <!-- col.// -->
               </div> <!-- row.// -->

@@ -26,6 +26,21 @@ const router = createRouter({
       path: '/goods/:id',
       name: 'goods_view',
       component: () => import('../views/GoodsDetailView.vue')
+    },
+    {
+      path: '/login',
+      name: 'portia_login',
+      component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/join_member',
+      name: 'portia_join',
+      component: () => import('../views/JoinView.vue')
+    },
+    {
+      path: '/basket',
+      name: 'basket_list',
+      component: () => import('../views/BasketView.vue')
     }
   ]
 })

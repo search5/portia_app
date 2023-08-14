@@ -3,6 +3,7 @@ import {defineComponent} from 'vue'
 import FooterView from "../components/FooterView.vue";
 import TopMenuView from "../components/TopMenuView.vue";
 import {range} from "lodash-es";
+import {number_format} from "../lib";
 
 export default defineComponent({
   name: "GoodsDetailView",
@@ -25,11 +26,13 @@ export default defineComponent({
     }
   }),
   methods: {
+    number_format,
     range,
     basket_add () {
-        var form = document.querySelector("form")
-        form.action = "/basket/add";
-        form.submit();
+      // var form = document.querySelector("form")
+      // form.action = "/basket/add";
+      // form.submit();
+      // TODO
     }
   }
 })
@@ -42,7 +45,7 @@ export default defineComponent({
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <form method="post" action="/basket/add">
+          <form>
             <input type="hidden" name="goods_id" value="{ item.id }}">
             <div class="card mb-4">
               <div class="row">
@@ -64,7 +67,7 @@ export default defineComponent({
 
                     <p class="price-detail-wrap">
                       <span class="price h3 text-warning">
-                        <span class="num">{{ item.price }}</span>
+                        <span class="num">{{ number_format(item.price) }}</span>
                       </span>
                       <span>원</span>
                     </p> <!-- price-detail-wrap .// -->
@@ -101,7 +104,7 @@ export default defineComponent({
 
                     <hr>
 
-                    <a href="#" onclick="basket_add()" class="btn btn-lg btn-outline-primary text-uppercase"> <i class="fas fa-shopping-cart"></i> 장바구니에 담기 </a>
+                    <a href="#" @click="basket_add" class="btn btn-outline-primary text-uppercase"> <i class="fas fa-shopping-cart"></i> 장바구니에 담기 </a>
                   </article> <!-- card-body.// -->
                 </aside> <!-- col.// -->
               </div> <!-- row.// -->

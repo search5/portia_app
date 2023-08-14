@@ -3,6 +3,7 @@ import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
 import {range} from "lodash-es";
+import {number_format} from "../lib";
 
 export default defineComponent({
   name: "GoodsView",
@@ -24,15 +25,10 @@ export default defineComponent({
         goods_description: '잘나가는 책입니다',
         goods_ranking: 4
       }
-    ],
-    iobj: {
-      number_format: new Intl.NumberFormat()
-    }
+    ]
   }),
   methods: {
-    number_format(value) {
-      return this.iobj.number_format.format(value)
-    },
+    number_format,
     range (value) {
       return range(value)
     }

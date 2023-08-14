@@ -1,55 +1,74 @@
 <script>
 import {defineComponent} from 'vue'
+import TopMenuView from "../components/TopMenuView.vue";
+import FooterView from "../components/FooterView.vue";
 
 export default defineComponent({
-  name: "JoinView"
+  name: "JoinView",
+  components: {FooterView, TopMenuView},
+  data: () => ({
+    input_data: {
+      real_name: '',
+      real_email: '',
+      user_password: '',
+      post_code: '',
+      addresses: '',
+      detail_address: ''
+    }
+  }),
+  methods: {
+    join () {
+      // TODO
+    }
+  }
 })
 </script>
 
 <template>
-{% extends "base.html" %}
-
-{% block body %}
-<div class="container">
-    <div class="row mt-4 mb-4">
+  <div>
+    <TopMenuView></TopMenuView>
+    <div class="container">
+      <div class="row mt-4 mb-4">
         <div class="col-12">
-            <h4>회원 가입하기</h4>
-            <form method="post" action="/join">
-                <div class="form-row">
-                  <div class="form-group col-md-2">
-                    <label for="inputEmail4">이름</label>
-                    <input type="email" class="form-control" id="inputEmail4" name="name">
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4" name="email">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="inputPassword4">비밀번호</label>
-                    <input type="password" class="form-control" id="inputPassword4" name="password">
-                  </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-2">
-                      <label for="inputCity">우편번호</label>
-                      <input type="text" class="form-control" id="inputCity" name="post_code">
-                    </div>
-                    <div class="form-group col-md-10">
-                      <label for="inputAddress">주소</label>
-                      <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" name="address">
-                    </div>
-                  </div>
-                <div class="form-group">
-                  <label for="inputAddress2">상세 주소</label>
-                  <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor" name="detail_address">
-                </div>
+          <h4>회원 가입하기</h4>
+          <form>
+            <div class="form-row">
+              <div class="mb-3 col-md-2">
+                <label for="inputName">이름</label>
+                <input type="text" class="form-control" id="inputName" v-model="input_data.real_name">
+              </div>
+              <div class="mb-3 col-md-4">
+                <label for="inputEmail">Email</label>
+                <input type="email" class="form-control" id="inputEmail" v-model="input_data.real_email">
+              </div>
+              <div class="mb-3 col-md-6">
+                <label for="inputPassword">비밀번호</label>
+                <input type="password" class="form-control" id="inputPassword" v-model="input_data.user_password">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="mb-3 col-md-2">
+                <label for="inputPostCode">우편번호</label>
+                <input type="text" class="form-control" id="inputPostCode" v-model="input_data.post_code">
+              </div>
+              <div class="mb-3 col-md-10">
+                <label for="inputAddress">주소</label>
+                <input type="text" class="form-control" id="inputAddress" v-model="input_data.addresses">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="inputAddress2">상세 주소</label>
+              <input type="text" class="form-control" id="inputAddress2" v-model="input_data.detail_address">
+            </div>
 
-                <button type="submit" class="btn btn-primary">가입하기</button>
-              </form>
+            <button type="button" @click="join" class="btn btn-primary">가입하기</button>
+          </form>
         </div>
+      </div>
     </div>
-</div>
-{% endblock %}
+
+    <FooterView></FooterView>
+  </div>
 </template>
 
 <style scoped>

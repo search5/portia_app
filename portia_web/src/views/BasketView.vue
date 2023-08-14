@@ -37,24 +37,25 @@ export default defineComponent({
         form.submit();
       }
     },
-    basket_delete(goods_id) {
+    basket_delete(item) {
       if (confirm("장바구니에서 삭제하시겠습니까?")) {
-        form.action = "/basket/delete";
-        form.delete_goods_id.value = goods_id;
-        form.submit();
+        // form.action = "/basket/delete";
+        // form.delete_goods_id.value = goods_id;
+        // form.submit();
+        // TODO: 서버 측 삭제
+        this.cart_items = remove(this.cart_items, (n) => {
+          return n.id // TODO 추가 구현 필요!!! (갑자기 멍해졌음)
+        })
       }
     },
-    goods_quantity_adjuest(action, elem) {
+    goods_quantity_adjuest(action, item) {
       let isBasketUpdate = true;
 
       if (action ===  'plus') {
-        var quantity_element = elem.nextElementSibling;
-        quantity_element.value = parseInt(quantity_element.value) + 1;
+        item.goods_cnt += 1;
       } else {
-        var quantity_element = elem.previousElementSibling;
-
-        if (quantity_element.value > 1) {
-          quantity_element.value = parseInt(quantity_element.value) - 1;
+        if (item.goods_cnt > 1) {
+          item.goods_cnt -= 1;
         } else {
           alert('최소 1개는 구매해야 합니다');
         }
@@ -109,14 +110,14 @@ export default defineComponent({
                 <div class="col-4 col-sm-4 col-md-4">
                   <input type="hidden" name="goods_id" value="{ item.goods_item.id }}">
                   <div class="quantity">
-                    <input type="button" value="+" class="plus" @click="goods_quantity_adjuest('plus', this)">
+                    <input type="button" value="+" class="plus" @click="goods_quantity_adjuest('plus', item)">
                     <input type="number" step="1" max="99" min="1" v-model="item.goods_cnt" title="Qty" class="qty"
                            size="4" name="quantity">
-                    <input type="button" value="-" class="minus" @click="goods_quantity_adjuest('minus', this)">
+                    <input type="button" value="-" class="minus" @click="goods_quantity_adjuest('minus', item)">
                   </div>
                 </div>
                 <div class="col-2 col-sm-2 col-md-2 text-right">
-                  <button type="button" class="btn btn-outline-danger btn-xs" @click="basket_delete('{{ item.id }}')">
+                  <button type="button" class="btn btn-outline-danger btn-xs" @click="basket_delete(item)">
                     <font-awesome-icon icon="fa-solid fa-trash" />
                   </button>
                 </div>

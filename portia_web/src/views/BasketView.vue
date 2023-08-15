@@ -3,6 +3,7 @@ import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
 import {number_format} from "../lib";
+import {forEach, remove} from "lodash-es";
 
 export default defineComponent({
   name: "BasketView",
@@ -10,6 +11,7 @@ export default defineComponent({
   data: () => ({
     cart_items: [
       {
+        uuid: '0d41659a-c26d-45b8-b5df-bf86ac4817ab',
         thumbnail: 'http://placehold.it/120x80',
         goods_item: {
           goods_name: '상품 1',
@@ -18,24 +20,24 @@ export default defineComponent({
         },
         goods_cnt: 1
       }
-    ],
-    total_money: 30000
+    ]
   }),
+  computed: {
+    total_money () {
+      let total_value = 0
+
+      forEach(this.cart_items, (value) => {
+        total_value = value.goods_item.price * value.goods_cnt
+      });
+
+      return total_value
+    }
+  },
   methods: {
     number_format,
-    // var form = document.querySelector("form");
-    // var isBasketUpdate = false;
-    basket_update() {
-      form.action = "/basket/update";
-      form.submit()
-    },
     payment() {
-      if (isBasketUpdate) {
-        alert('장바구니를 업데이트해주세요');
-      } else {
-        form.action = "/order";
-        form.submit();
-      }
+      form.action = "/order";
+      form.submit();
     },
     basket_delete(item) {
       if (confirm("장바구니에서 삭제하시겠습니까?")) {
@@ -43,14 +45,12 @@ export default defineComponent({
         // form.delete_goods_id.value = goods_id;
         // form.submit();
         // TODO: 서버 측 삭제
-        this.cart_items = remove(this.cart_items, (n) => {
-          return n.id // TODO 추가 구현 필요!!! (갑자기 멍해졌음)
+        remove(this.cart_items, (n) => {
+          return n.uuid === item.uuid
         })
       }
     },
     goods_quantity_adjuest(action, item) {
-      let isBasketUpdate = true;
-
       if (action ===  'plus') {
         item.goods_cnt += 1;
       } else {
@@ -123,14 +123,7 @@ export default defineComponent({
                 </div>
               </div>
             </div>
-            <hr>
             <!-- END PRODUCT -->
-
-            <div class="fa-pull-right">
-              <a href="#" @click="basket_update" class="btn btn-outline-secondary fa-pull-right">
-                장바구니 업데이트
-              </a>
-            </div>
           </form>
         </div>
         <div class="card-footer">

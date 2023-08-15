@@ -32,7 +32,7 @@ export default defineComponent({
         <div class="col-12">
           <h4>회원 가입하기</h4>
           <form>
-            <div class="form-row">
+            <div class="row">
               <div class="mb-3 col-md-2">
                 <label for="inputName">이름</label>
                 <input type="text" class="form-control" id="inputName" v-model="input_data.real_name">
@@ -46,7 +46,7 @@ export default defineComponent({
                 <input type="password" class="form-control" id="inputPassword" v-model="input_data.user_password">
               </div>
             </div>
-            <div class="form-row">
+            <div class="row">
               <div class="mb-3 col-md-2">
                 <label for="inputPostCode">우편번호</label>
                 <input type="text" class="form-control" id="inputPostCode" v-model="input_data.post_code">

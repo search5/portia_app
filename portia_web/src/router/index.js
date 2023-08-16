@@ -41,6 +41,11 @@ const router = createRouter({
       path: '/basket',
       name: 'basket_list',
       component: () => import('../views/BasketView.vue')
+    },
+    {
+      path: '/tracking',
+      name: 'tracking_view',
+      component: () => import('../views/TrackingView.vue')
     }
   ]
 })

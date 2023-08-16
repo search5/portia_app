@@ -1,21 +1,97 @@
 <script>
 import {defineComponent} from 'vue'
+import TopMenuView from "../components/TopMenuView.vue";
+import FooterView from "../components/FooterView.vue";
 
 export default defineComponent({
-  name: "TrackingView"
+  name: "TrackingView",
+  components: {FooterView, TopMenuView}
 })
 </script>
 
 <template>
-{% extends "base.html" %}
+  <div>
+    <TopMenuView></TopMenuView>
+    <div class="container">
+      <article class="card mt-4 mb-4">
+        <header class="card-header"> My Orders / Tracking</header>
+        <div class="card-body">
+          <h6>Order ID: OD45345345435</h6>
+          <article class="card">
+            <div class="card-body row">
+              <div class="col"><strong>Estimated Delivery time:</strong> <br>29 nov 2019</div>
+              <div class="col"><strong>Shipping BY:</strong> <br> BLUEDART, |
+                <font-awesome-icon icon="fa-solid fa-phone"/>
+                +1598675986
+              </div>
+              <div class="col"><strong>Status:</strong> <br> Picked by the courier</div>
+              <div class="col"><strong>Tracking #:</strong> <br> BD045903594059</div>
+            </div>
+          </article>
+          <div class="track">
+            <div class="step active">
+              <span class="icon"> <font-awesome-icon icon="fa-solid fa-check"/> </span>
+              <span class="text">Order confirmed</span></div>
+            <div class="step active">
+              <span class="icon"> <font-awesome-icon icon="fa-solid fa-user"/> </span>
+              <span class="text"> Picked by courier</span></div>
+            <div class="step">
+              <span class="icon"> <font-awesome-icon icon="fa-solid fa-truck"/> </span>
+              <span class="text"> On the way </span></div>
+            <div class="step">
+              <span class="icon"> <font-awesome-icon icon="fa-solid fa-box"/> </span>
+              <span class="text">Ready for pickup</span></div>
+          </div>
+          <hr>
+          <ul class="row">
+            <li class="col-md-4">
+              <figure class="itemside mb-3">
+                <div class="aside">
+                  <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571751108/Ecommerce/laptop-dell-xps-15-computer-monitors-laptops.jpg"
+                    class="img-sm border">
+                </div>
+                <figcaption class="info align-self-center">
+                  <p class="title">Dell Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$950 </span>
+                </figcaption>
+              </figure>
+            </li>
+            <li class="col-md-4">
+              <figure class="itemside mb-3">
+                <div class="aside">
+                  <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571750967/Ecommerce/ef192a21ec96.jpg"
+                    class="img-sm border">
+                </div>
+                <figcaption class="info align-self-center">
+                  <p class="title">HP Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$850 </span>
+                </figcaption>
+              </figure>
+            </li>
+            <li class="col-md-4">
+              <figure class="itemside mb-3">
+                <div class="aside">
+                  <img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571750722/Ecommerce/acer-v-17-nitro-realsense.jpg"
+                    class="img-sm border">
+                </div>
+                <figcaption class="info align-self-center">
+                  <p class="title">ACER Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$650 </span>
+                </figcaption>
+              </figure>
+            </li>
+          </ul>
+          <hr>
+          <a href="#" class="btn btn-warning" data-abc="true">
+            <font-awesome-icon icon="fa-solid fa-chevron-left"/>
+            Back to orders</a>
+        </div>
+      </article>
+    </div>
 
-{% block css %}
-<style type="text/css">
- @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+    <FooterView></FooterView>
+  </div>
+</template>
 
-body {
-    font-family: 'Open Sans', serif
-}
+<style scoped>
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
 
 .card {
     position: relative;
@@ -159,64 +235,4 @@ p {
     border-color: #ff2b00;
     border-radius: 1px
 }
-</style>
-{% endblock %}
-
-{% block body %}
-<div class="container">
-    <article class="card mt-4 mb-4">
-        <header class="card-header"> My Orders / Tracking </header>
-        <div class="card-body">
-            <h6>Order ID: OD45345345435</h6>
-            <article class="card">
-                <div class="card-body row">
-                    <div class="col"> <strong>Estimated Delivery time:</strong> <br>29 nov 2019 </div>
-                    <div class="col"> <strong>Shipping BY:</strong> <br> BLUEDART, | <font-awesome-icon icon="fa-solid fa-phone" /> +1598675986 </div>
-                    <div class="col"> <strong>Status:</strong> <br> Picked by the courier </div>
-                    <div class="col"> <strong>Tracking #:</strong> <br> BD045903594059 </div>
-                </div>
-            </article>
-            <div class="track">
-                <div class="step active"> <span class="icon"> <font-awesome-icon icon="fa-solid fa-check" /> </span> <span class="text">Order confirmed</span> </div>
-                <div class="step active"> <span class="icon"> <font-awesome-icon icon="fa-solid fa-user" /> </span> <span class="text"> Picked by courier</span> </div>
-                <div class="step"> <span class="icon"> <font-awesome-icon icon="fa-solid fa-truck" /> </span> <span class="text"> On the way </span> </div>
-                <div class="step"> <span class="icon"> <font-awesome-icon icon="fa-solid fa-box" /> </span> <span class="text">Ready for pickup</span> </div>
-            </div>
-            <hr>
-            <ul class="row">
-                <li class="col-md-4">
-                    <figure class="itemside mb-3">
-                        <div class="aside"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571751108/Ecommerce/laptop-dell-xps-15-computer-monitors-laptops.jpg" class="img-sm border"></div>
-                        <figcaption class="info align-self-center">
-                            <p class="title">Dell Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$950 </span>
-                        </figcaption>
-                    </figure>
-                </li>
-                <li class="col-md-4">
-                    <figure class="itemside mb-3">
-                        <div class="aside"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571750967/Ecommerce/ef192a21ec96.jpg" class="img-sm border"></div>
-                        <figcaption class="info align-self-center">
-                            <p class="title">HP Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$850 </span>
-                        </figcaption>
-                    </figure>
-                </li>
-                <li class="col-md-4">
-                    <figure class="itemside mb-3">
-                        <div class="aside"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1571750722/Ecommerce/acer-v-17-nitro-realsense.jpg" class="img-sm border"></div>
-                        <figcaption class="info align-self-center">
-                            <p class="title">ACER Laptop with 500GB HDD <br> 8GB RAM</p> <span class="text-muted">$650 </span>
-                        </figcaption>
-                    </figure>
-                </li>
-            </ul>
-            <hr>
-            <a href="#" class="btn btn-warning" data-abc="true"> <font-awesome-icon icon="fa-solid fa-chevron-left" /> Back to orders</a>
-        </div>
-    </article>
-</div>
-{% endblock %}
-</template>
-
-<style scoped>
-
 </style>

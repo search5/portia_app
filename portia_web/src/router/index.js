@@ -46,6 +46,26 @@ const router = createRouter({
       path: '/tracking',
       name: 'tracking_view',
       component: () => import('../views/TrackingView.vue')
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: () => import('../views/MyPageView.vue')
+    },
+    {
+      path: '/mypage/orders',
+      name: 'myorder',
+      component: () => import('../views/MyOrdersView.vue')
+    },,
+    {
+      path: '/mypage/orders/:uuid',
+      name: 'myorder_detail',
+      component: () => import('../views/MyOrderDetail.vue')
+    },
+    {
+      path: '/mypage/myinfo',
+      name: 'myinfo',
+      component: () => import('../views/MyInfoView.vue')
     }
   ]
 })

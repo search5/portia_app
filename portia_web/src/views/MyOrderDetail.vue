@@ -13,6 +13,10 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
+    <div class="container">
+
+    </div>
+
     <FooterView></FooterView>
   </div>
 </template>

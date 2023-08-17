@@ -3,6 +3,7 @@ import {defineComponent} from 'vue'
 import TopMenuView from "@/components/TopMenuView.vue";
 import FooterView from "@/components/FooterView.vue";
 import {number_format} from "../lib";
+import MyPageSlot from "../components/MyPageSlot.vue";
 
 export default defineComponent({
   name: "MyPageView",
@@ -18,7 +19,7 @@ export default defineComponent({
       }
     ]
   }),
-  components: {FooterView, TopMenuView}
+  components: {MyPageSlot, FooterView, TopMenuView}
 })
 </script>
 
@@ -26,40 +27,30 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-2">
-          <ul class="list-group list-group-flush">
-            <RouterLink class="list-group-item list-group-item-action" :to="{ name: 'myinfo' }">내 정보</RouterLink>
-            <RouterLink class="list-group-item list-group-item-action" :to="{ name: 'myorder' }">구매 내역</RouterLink>
-          </ul>
-        </div>
-        <div class="col-10">
-          <h3>최근 구매 내역 5건</h3>
-          <table class="table table-hover mb-5">
-            <thead>
-            <tr>
-              <th>구매번호</th>
-              <th>구매상품</th>
-              <th>가격</th>
-              <th>구매일</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr :key="index" v-for="(item, index) in order_items">
-              <td style="width: 190px;" class="align-middle">{{ item.uuid }}</td>
-              <td>
-                <img class="img-thumbnail me-2" :src="item.img">
-                <RouterLink :to="{ name: 'myorder_detail', params: { uuid: item.uuid } }">{{ item.title }}</RouterLink>
-              </td>
-              <td class="align-middle">{{ number_format(item.price) }}</td>
-              <td class="align-middle">{{ item.order_date }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <MyPageSlot>
+      <h3>최근 구매 내역 5건</h3>
+      <table class="table table-hover mb-5">
+        <thead>
+        <tr>
+          <th>구매번호</th>
+          <th>구매상품</th>
+          <th>가격</th>
+          <th>구매일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr :key="index" v-for="(item, index) in order_items">
+          <td style="width: 190px;" class="align-middle">{{ item.uuid }}</td>
+          <td>
+            <img class="img-thumbnail me-2" :src="item.img">
+            <RouterLink :to="{ name: 'myorder_detail', params: { uuid: item.uuid } }">{{ item.title }}</RouterLink>
+          </td>
+          <td class="align-middle">{{ number_format(item.price) }}</td>
+          <td class="align-middle">{{ item.order_date }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </MyPageSlot>
 
     <FooterView></FooterView>
   </div>

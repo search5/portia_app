@@ -2,10 +2,11 @@
 import {defineComponent} from 'vue'
 import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
+import MyPageSlot from "../components/MyPageSlot.vue";
 
 export default defineComponent({
   name: "MyInfoView",
-  components: {TopMenuView, FooterView},
+  components: {MyPageSlot, TopMenuView, FooterView},
   data: () => ({
     input_data: {
       real_name: '홍길동',
@@ -30,7 +31,7 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <div class="container">
+    <MyPageSlot>
       <div class="row mt-4 mb-4">
         <div class="col-12">
           <h4>내 정보</h4>
@@ -84,7 +85,7 @@ export default defineComponent({
           </form>
         </div>
       </div>
-    </div>
+    </MyPageSlot>>
 
     <FooterView></FooterView>
   </div>

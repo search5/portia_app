@@ -2,10 +2,24 @@
 import {defineComponent} from 'vue'
 import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
+import MyPageSlot from "../components/MyPageSlot.vue";
+import {number_format} from "../lib";
 
 export default defineComponent({
   name: "MyOrdersView",
-  components: {TopMenuView, FooterView}
+  methods: {number_format},
+  components: {MyPageSlot, TopMenuView, FooterView},
+  data: () => ({
+    order_items: [
+      {
+        uuid: 'Portia2023AUG171540',
+        title: '잘 나가는 상품 외 1개',
+        img: 'http://placehold.it/100x50',
+        price: 30000,
+        order_date: '2023-08-17'
+      }
+    ]
+  })
 })
 </script>
 
@@ -13,9 +27,40 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <div class="container">
+    <MyPageSlot>
+      <h3>전체 구매 내역</h3>
+      <table class="table table-hover mb-2">
+        <thead>
+        <tr>
+          <th>구매번호</th>
+          <th>구매상품</th>
+          <th>가격</th>
+          <th>구매일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr :key="index" v-for="(item, index) in order_items">
+          <td style="width: 190px;" class="align-middle">{{ item.uuid }}</td>
+          <td>
+            <img class="img-thumbnail me-2" :src="item.img">
+            <RouterLink :to="{ name: 'myorder_detail', params: { uuid: item.uuid } }">{{ item.title }}</RouterLink>
+          </td>
+          <td class="align-middle">{{ number_format(item.price) }}</td>
+          <td class="align-middle">{{ item.order_date }}</td>
+        </tr>
+        </tbody>
+      </table>
 
-    </div>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </MyPageSlot>
 
     <FooterView></FooterView>
   </div>

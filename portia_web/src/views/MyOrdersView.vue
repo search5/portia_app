@@ -4,12 +4,19 @@ import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
 import MyPageSlot from "../components/MyPageSlot.vue";
 import {number_format} from "../lib";
+import PaginationItem from "../components/PaginationItem.vue";
 
 export default defineComponent({
   name: "MyOrdersView",
-  methods: {number_format},
-  components: {MyPageSlot, TopMenuView, FooterView},
+  methods: {
+    number_format,
+    page_move (page_no) {
+      this.page_no = page_no
+    }
+  },
+  components: {PaginationItem, MyPageSlot, TopMenuView, FooterView},
   data: () => ({
+    page_no: 1,
     order_items: [
       {
         uuid: 'Portia2023AUG171540',
@@ -60,6 +67,8 @@ export default defineComponent({
           <li class="page-item"><a class="page-link" href="#">Next</a></li>
         </ul>
       </nav>
+
+      <PaginationItem :page="page_no" :total="10" @page_click="page_move"></PaginationItem>
     </MyPageSlot>
 
     <FooterView></FooterView>

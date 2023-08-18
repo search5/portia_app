@@ -25,15 +25,21 @@ export default {
 <template>
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
-      <li class="page-item"><a class="page-link" href="#">First</a></li>
-      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-      <li class="page-item" :key="index" v-for="(item, index) in paginates.items">
+      <li class="page-item" v-if="paginates.current > 1">
+        <a class="page-link" href="#" @click="pageClick(1)">First</a>
+      </li>
+      <li class="page-item" v-if="paginates.prev !== null">
+        <a class="page-link" href="#" @click="pageClick(paginates.prev)">Previous</a>
+      </li>
+      <li class="page-item" :class="{active: paginates.current === item}" :key="index" v-for="(item, index) in paginates.items">
         <a class="page-link" href="#" @click="pageClick(item)">{{ item }}</a>
       </li>
-<!--      <li class="page-item"><a class="page-link" href="#">2</a></li>-->
-<!--      <li class="page-item"><a class="page-link" href="#">3</a></li>-->
-      <li class="page-item"><a class="page-link" href="#">Next</a></li>
-      <li class="page-item"><a class="page-link" href="#">Last</a></li>
+      <li class="page-item" v-if="paginates.next !== null">
+        <a class="page-link" href="#" @click="pageClick(paginates.next)">Next</a>
+      </li>
+      <li class="page-item" v-if="paginates.current < this.total">
+        <a class="page-link" href="#" @click="pageClick(this.total)">Last</a>
+      </li>
     </ul>
   </nav>
 </template>

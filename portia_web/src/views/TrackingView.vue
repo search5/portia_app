@@ -2,10 +2,11 @@
 import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
+import MyPageSlot from "@/components/MyPageSlot.vue";
 
 export default defineComponent({
   name: "TrackingView",
-  components: {FooterView, TopMenuView}
+  components: {MyPageSlot, FooterView, TopMenuView}
 })
 </script>
 
@@ -13,7 +14,7 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <div class="container">
+    <MyPageSlot>
       <article class="card mt-4 mb-4">
         <header class="card-header"> My Orders / Tracking</header>
         <div class="card-body">
@@ -85,7 +86,7 @@ export default defineComponent({
             Back to orders</a>
         </div>
       </article>
-    </div>
+    </MyPageSlot>
 
     <FooterView></FooterView>
   </div>

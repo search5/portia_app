@@ -4,6 +4,7 @@ import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
 import MyPageSlot from "../components/MyPageSlot.vue";
 import {number_format} from "../lib";
+import {forEach} from "lodash-es";
 
 export default defineComponent({
   name: "MyOrderDetail",
@@ -18,6 +19,11 @@ export default defineComponent({
         goods_cnt: 2,
         goods_price: 30000,
         goods_total_price: 60000,
+      }, {
+        goods_name: '상품 2',
+        goods_cnt: 2,
+        goods_price: 30000,
+        goods_total_price: 220000,
       }
     ],
     orderers: {
@@ -34,7 +40,13 @@ export default defineComponent({
   }),
   computed: {
     total_price () {
-      return 0
+      let total_value = 0
+
+      forEach(this.items, (value) => {
+        total_value += value.goods_total_price
+      });
+
+      return total_value
     }
   }
 })

@@ -2,6 +2,9 @@
 import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
+import { Toast } from 'bootstrap';
+
+let toastBootstrap = null
 
 export default defineComponent({
   name: "JoinView",
@@ -18,8 +21,11 @@ export default defineComponent({
   }),
   methods: {
     join () {
-      // TODO
+      toastBootstrap.show()
     }
+  },
+  mounted () {
+    toastBootstrap = Toast.getOrCreateInstance(this.$refs.liveToast)
   }
 })
 </script>
@@ -27,6 +33,21 @@ export default defineComponent({
 <template>
   <div>
     <TopMenuView></TopMenuView>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" ref="liveToast">
+        <div class="toast-header">
+          <svg class="bd-placeholder-img rounded me-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#007aff"/></svg>
+          <strong class="me-auto">Portia Shop</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          회원 가입에 실패했습니다.
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <div class="row mt-4 mb-4">
         <div class="col-12">

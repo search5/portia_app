@@ -12,6 +12,8 @@ export default defineComponent({
     number_format,
     page_move (page_no) {
       this.page_no = page_no
+
+      // TODO Server Call
     }
   },
   components: {PaginationItem, MyPageSlot, TopMenuView, FooterView},
@@ -57,16 +59,6 @@ export default defineComponent({
         </tr>
         </tbody>
       </table>
-
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul>
-      </nav>
 
       <PaginationItem :page="page_no" :total="10" @page_click="page_move"></PaginationItem>
     </MyPageSlot>

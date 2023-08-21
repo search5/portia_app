@@ -60,7 +60,7 @@ const router = createRouter({
     {
       path: '/mypage/orders/:uuid',
       name: 'myorder_detail',
-      component: () => import('../views/MyOrderDetail.vue')
+      component: () => import('../views/MyOrderDetailView.vue')
     },
     {
       path: '/mypage/myinfo',

@@ -3,6 +3,8 @@ import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
 import { Toast } from 'bootstrap';
+import {every} from "lodash-es";
+import axios from "axios";
 
 let toastBootstrap = null
 
@@ -21,7 +23,16 @@ export default defineComponent({
   }),
   methods: {
     join () {
-      toastBootstrap.show()
+      if (!every(this.input_data)) {
+        toastBootstrap.show()
+        return false
+      }
+
+      axios.post('/api/users/join', this.input_data).then(resp => {
+        console.log(resp)
+      }).catch(error => {
+        toastBootstrap.show()
+      })
     }
   },
   mounted () {
@@ -34,12 +45,13 @@ export default defineComponent({
   <div>
     <TopMenuView></TopMenuView>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast-container position-fixed top-0 start-0 p-3">
       <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" ref="liveToast">
         <div class="toast-header">
-          <svg class="bd-placeholder-img rounded me-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#007aff"/></svg>
+          <svg class="bd-placeholder-img rounded me-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <rect width="100%" height="100%" fill="#007aff"/>
+          </svg>
           <strong class="me-auto">Portia Shop</strong>
-          <small>11 mins ago</small>
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">

@@ -1,13 +1,55 @@
 import os
 
 import bcrypt
+from cerberus import Validator
 from flask import redirect, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
+from sqlalchemy import func
 
 from portia.factory import create_app
-from portia.models import db, User
+from portia.models import db, User, DeliveryAddresses
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
+
+
+@app.route("/api/users/join", methods=["POST"])
+def user_join():
+    schema = {'real_name': {'type': 'string', 'minlength': 1},
+              'real_email': {'type': 'string', 'minlength': 1},
+              'user_password': {'type': 'string', 'minlength': 1},
+              'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
+              'addresses': {'type': 'string', 'minlength': 5},
+              'detail_address': {'type': 'string', 'minlength': 5}}
+    v = Validator(schema)
+
+    req_json = request.get_json()
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
+    # 데이터베이스에 사용자 추가
+    new_user = User()
+    new_user.username = req_json.get('real_email')
+    new_user.email = req_json.get('real_email')
+    new_user.name = req_json.get('real_name')
+    new_user.password = req_json.get('user_password')
+    new_user.is_admin = 'N'
+    new_user.join_date = func.now()
+
+    user_addr = DeliveryAddresses()
+    user_addr.username = req_json.get('real_email')
+    user_addr.user = new_user
+    user_addr.postcode = req_json.get('post_code')
+    user_addr.address1 = req_json.get('addresses')
+    user_addr.address2 = req_json.get('detail_address')
+    user_addr.created_date = func.now()
+
+    db.session.add(new_user)
+    db.session.add(user_addr)
+
+    db.session.commit()
+
+    return jsonify(success=True)
 
 
 @app.route("/api/login", methods=["PATCH"])

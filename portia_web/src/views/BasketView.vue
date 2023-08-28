@@ -71,18 +71,6 @@ export default defineComponent({
 
     <div class="container mb-3">
       <div class="card shopping-cart">
-  <!--        {% with messages = get_flashed_messages() %}-->
-  <!--            {% if messages %}-->
-  <!--            <div class="alert alert-success mt-3" role="alert"></div>-->
-  <!--            <ul class=flashes>-->
-  <!--            {% for message in messages %}-->
-  <!--                <li>{{ message }}</li>-->
-  <!--            {% endfor %}-->
-  <!--            </ul>-->
-  <!--            </div>-->
-  <!--            {% endif %}-->
-  <!--        {% endwith %}-->
-
         <div class="card-header bg-dark text-light">
           <font-awesome-icon icon="fa-solid fa-shopping-cart" />
           장바구니

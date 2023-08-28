@@ -3,19 +3,33 @@ import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
 import NounAvartar from "../components/icons/NounAvartar.vue";
+import axios from "axios";
+import {every} from "lodash-es";
 
 export default defineComponent({
   name: "LoginView",
   components: {NounAvartar, FooterView, TopMenuView},
   data: () => ({
     input_data: {
-      email: '',
+      username: '',
       password: ''
     }
   }),
   methods: {
     login () {
-      // TODO
+      if (!every(this.input_data)) {
+        alert('ID 또는 비밀번호가 입력되지 않았습니다')
+        return false
+      }
+
+      axios.patch('/api/login', this.input_data).then(result => {
+        localStorage.setItem('access_token', result.data.access_token)
+        localStorage.setItem('refresh_token', result.data.refresh_token)
+
+        this.$router.push({name: 'index'})
+      }).catch(result => {
+        alert('로그인에 실패했습니다')
+      })
     }
   }
 })
@@ -28,18 +42,6 @@ export default defineComponent({
     <div class="container">
       <div class="row">
         <div class="col-12">
-  <!--            {% with messages = get_flashed_messages() %}-->
-  <!--                {% if messages %}-->
-  <!--                <div class="alert alert-danger mt-3" role="alert"></div>-->
-  <!--                <ul class=flashes>-->
-  <!--                {% for message in messages %}-->
-  <!--                    <li>{{ message }}</li>-->
-  <!--                {% endfor %}-->
-  <!--                </ul>-->
-  <!--                </div>-->
-  <!--                {% endif %}-->
-  <!--            {% endwith %}-->
-
           <div class="login-form">
             <h2 class="text-center">Member Login</h2>
             <form>
@@ -47,7 +49,7 @@ export default defineComponent({
                 <NounAvartar />
               </div>
               <div class="mb-3">
-                <input type="text" class="form-control" name="email" placeholder="Username" required="required" v-model="input_data.email">
+                <input type="text" class="form-control" name="email" placeholder="Username" required="required" v-model="input_data.username">
               </div>
               <div class="mb-3">
                 <input type="password" class="form-control" name="password" placeholder="Password" required="required" v-model="input_data.password">

@@ -54,18 +54,6 @@ export default defineComponent({
 
     <!-- Page Content -->
     <div class="container">
-  <!--    {% with messages = get_flashed_messages() %}-->
-  <!--      {% if messages %}-->
-  <!--      <div class="alert alert-danger mt-3" role="alert"></div>-->
-  <!--        <ul class=flashes>-->
-  <!--        {% for message in messages %}-->
-  <!--          <li>{{ message }}</li>-->
-  <!--        {% endfor %}-->
-  <!--        </ul>-->
-  <!--      </div>-->
-  <!--      {% endif %}-->
-  <!--    {% endwith %}-->
-
       <div class="row">
         <div class="col-lg-3">
           <h1 class="my-4">Portia 쇼핑몰</h1>

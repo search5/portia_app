@@ -2,7 +2,7 @@ import os
 
 import bcrypt
 from cerberus import Validator
-from flask import redirect, request, jsonify
+from flask import redirect, request, jsonify, render_template
 from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
 from sqlalchemy import func
 
@@ -27,25 +27,36 @@ def user_join():
     if not v.validate(req_json):
         return jsonify(success=False), 400
 
+    new_user_password = req_json.get('user_password').strip().encode('utf-8')
+    encrypt_password = bcrypt.hashpw(new_user_password, bcrypt.gensalt())
+
+    new_username = req_json.get('real_email').strip()
+
+    # 기존 사용자 검색 로직 추가
+    exists_user = db.session.execute(db.select(User).
+                                     filter(User.username == new_username)).first()
+    if exists_user:
+        return jsonify(success=False), 400
+
     # 데이터베이스에 사용자 추가
     new_user = User()
-    new_user.username = req_json.get('real_email')
-    new_user.email = req_json.get('real_email')
-    new_user.name = req_json.get('real_name')
-    new_user.password = req_json.get('user_password')
+    new_user.username = new_username
+    new_user.email = req_json.get('real_email').strip()
+    new_user.name = req_json.get('real_name').strip()
+    new_user.password = encrypt_password.decode('utf-8')
     new_user.is_admin = 'N'
     new_user.join_date = func.now()
 
-    user_addr = DeliveryAddresses()
-    user_addr.username = req_json.get('real_email')
-    user_addr.user = new_user
-    user_addr.postcode = req_json.get('post_code')
-    user_addr.address1 = req_json.get('addresses')
-    user_addr.address2 = req_json.get('detail_address')
-    user_addr.created_date = func.now()
+    new_addr = DeliveryAddresses()
+    new_addr.username = new_username
+    new_addr.user = new_user
+    new_addr.postcode = req_json.get('post_code').strip()
+    new_addr.address1 = req_json.get('addresses').strip()
+    new_addr.address2 = req_json.get('detail_address').strip()
+    new_addr.created_date = func.now()
 
     db.session.add(new_user)
-    db.session.add(user_addr)
+    db.session.add(new_addr)
 
     db.session.commit()
 
@@ -89,3 +100,16 @@ def logout():
     """Logout view"""
     jti = get_jwt()["jti"]
     return redirect('/')
+
+
+# placeholder route
+# write date: 2023-08-28 19:56
+@app.route('/api/placeholder', defaults={'size': '300x200'})
+@app.route('/api/placeholder/<size>')
+def placeholder_img(size):
+    width, height = size.split("x")
+    bg_fill = '#cccccc'
+    txt_fill = '#9c9c9c'
+    txt = size
+
+    return render_template('placeholder.jinja2', width=width, height=height, bg_fill=bg_fill, txt_fill=txt_fill, txt=txt), (('Content-Type', 'image/svg+xml'),)

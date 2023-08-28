@@ -11,13 +11,13 @@ export default defineComponent({
   data: () => ({
     item: {
       id: 1,
-      big_image: 'http://placehold.it/525x450',
+      big_image: '/api/placeholder/525x450',
       thumbnails: [
-        {small: 'http://placehold.it/60x60', big: 'http://placehold.it/700x400'},
-        {small: 'http://placehold.it/60x60', big: 'http://placehold.it/700x400'},
-        {small: 'http://placehold.it/60x60', big: 'http://placehold.it/700x400'},
-        {small: 'http://placehold.it/60x60', big: 'http://placehold.it/700x400'},
-        {small: 'http://placehold.it/60x60', big: 'http://placehold.it/700x400'}
+        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
+        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
+        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
+        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
+        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'}
       ],
       goods_name: '상품 1',
       price: 30000,

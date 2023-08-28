@@ -13,7 +13,7 @@ export default defineComponent({
       {
         uuid: 'Portia2023AUG171540',
         title: '잘 나가는 상품 외 1개',
-        img: 'http://placehold.it/100x50',
+        img: '/api/placeholder/100x50',
         price: 30000,
         order_date: '2023-08-17'
       }

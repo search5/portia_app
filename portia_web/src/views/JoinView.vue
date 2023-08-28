@@ -19,7 +19,8 @@ export default defineComponent({
       post_code: '',
       addresses: '',
       detail_address: ''
-    }
+    },
+    toast_message: '회원 가입에 실패했습니다.'
   }),
   methods: {
     join () {
@@ -29,14 +30,23 @@ export default defineComponent({
       }
 
       axios.post('/api/users/join', this.input_data).then(resp => {
-        console.log(resp)
+        if (resp.data.success) {
+          this.toast_message = '회원 가입에 성공했습니다'
+          toastBootstrap.show()
+        }
       }).catch(error => {
+        this.toast_message = '회원 가입에 실패했습니다'
         toastBootstrap.show()
       })
     }
   },
   mounted () {
     toastBootstrap = Toast.getOrCreateInstance(this.$refs.liveToast)
+    this.$refs.liveToast.addEventListener('hidden.bs.toast', () => {
+      if (this.toast_message === '회원 가입에 성공했습니다') {
+        this.$router.push({ name: 'portia_login'})
+      }
+    })
   }
 })
 </script>
@@ -55,7 +65,7 @@ export default defineComponent({
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
-          회원 가입에 실패했습니다.
+          {{ toast_message }}
         </div>
       </div>
     </div>

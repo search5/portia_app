@@ -48,7 +48,7 @@ const router = createRouter({
       path: '/mypage/orders',
       name: 'myorder',
       component: () => import('../views/MyOrdersView.vue')
-    },,
+    },
     {
       path: '/mypage/orders/:uuid',
       name: 'myorder_detail',
@@ -58,6 +58,12 @@ const router = createRouter({
       path: '/mypage/myinfo',
       name: 'myinfo',
       component: () => import('../views/MyInfoView.vue')
+    },
+    {
+      path: '/blank-image/:size',
+      name: 'blank_image',
+      component: () => import('../components/icons/EmptyPicture.vue'),
+      props: true
     }
   ]
 })

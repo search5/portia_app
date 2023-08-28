@@ -12,14 +12,14 @@ export default defineComponent({
     goods: [
       {
         id: 1,
-        thumbnail: 'http://placehold.it/700x400',
+        thumbnail: '/api/placeholder/700x400',
         goods_name: '상품 1',
         price: 30000,
         goods_description: '올바른 상품입니다',
         goods_ranking: 3
       }, {
         id: 2,
-        thumbnail: 'http://placehold.it/700x400',
+        thumbnail: '/api/placeholder/700x400',
         goods_name: '상품 2',
         price: 28000,
         goods_description: '잘나가는 책입니다',

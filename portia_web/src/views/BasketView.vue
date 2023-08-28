@@ -12,7 +12,7 @@ export default defineComponent({
     cart_items: [
       {
         uuid: '0d41659a-c26d-45b8-b5df-bf86ac4817ab',
-        thumbnail: 'http://placehold.it/120x80',
+        thumbnail: '/api/placeholder/120x80',
         goods_item: {
           goods_name: '상품 1',
           goods_description: '상품이 좋아요!',

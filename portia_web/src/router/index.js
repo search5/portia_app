@@ -1,5 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+const requireAuth = () => (to, from, next) => {
+  let accessToken = localStorage.getItem('access_token')
+  if (accessToken !== '') {
+    return next();
+  }
+
+  next('/login');
+};
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,32 +40,38 @@ const router = createRouter({
     {
       path: '/basket',
       name: 'basket_list',
-      component: () => import('../views/BasketView.vue')
+      component: () => import('../views/BasketView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/tracking',
       name: 'tracking_view',
-      component: () => import('../views/TrackingView.vue')
+      component: () => import('../views/TrackingView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('../views/MyPageView.vue')
+      component: () => import('../views/MyPageView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/mypage/orders',
       name: 'myorder',
-      component: () => import('../views/MyOrdersView.vue')
+      component: () => import('../views/MyOrdersView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/mypage/orders/:uuid',
       name: 'myorder_detail',
-      component: () => import('../views/MyOrderDetailView.vue')
+      component: () => import('../views/MyOrderDetailView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/mypage/myinfo',
       name: 'myinfo',
-      component: () => import('../views/MyInfoView.vue')
+      component: () => import('../views/MyInfoView.vue'),
+      beforeEnter: requireAuth()
     },
     {
       path: '/blank-image/:size',

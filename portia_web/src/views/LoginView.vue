@@ -5,6 +5,8 @@ import FooterView from "../components/FooterView.vue";
 import NounAvartar from "../components/icons/NounAvartar.vue";
 import axios from "axios";
 import {every} from "lodash-es";
+import {mapActions} from "pinia";
+import {useUsersStore} from "../stores/users";
 
 export default defineComponent({
   name: "LoginView",
@@ -16,18 +18,13 @@ export default defineComponent({
     }
   }),
   methods: {
+    ...mapActions(useUsersStore, ['login_action']),
     login () {
-      if (!every(this.input_data)) {
-        alert('ID 또는 비밀번호가 입력되지 않았습니다')
-        return false
-      }
-
-      axios.patch('/api/login', this.input_data).then(result => {
-        localStorage.setItem('access_token', result.data.access_token)
-        localStorage.setItem('refresh_token', result.data.refresh_token)
-
-        this.$router.push({name: 'index'})
-      }).catch(result => {
+      this.login_action(this.input_data).then(result => {
+        if (result.success) {
+          this.$router.push({name: 'index'})
+        }
+      }).catch(error => {
         alert('로그인에 실패했습니다')
       })
     }

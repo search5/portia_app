@@ -1,8 +1,31 @@
 <script>
 import {defineComponent} from 'vue'
+import {useUsersStore} from "../stores/users";
+import {mapActions, mapState} from "pinia";
 
 export default defineComponent({
-  name: "TopMenuView"
+  name: "TopMenuView",
+  methods: {
+    portia_logout () {
+      const access_token = localStorage.getItem('access_token')
+      const refresh_token = localStorage.getItem('refresh_token')
+
+      if (access_token !== null && refresh_token !== null) {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        localStorage.removeItem('username')
+      }
+
+      if (this.$router.currentRoute.value.name !== 'index') {
+        this.$router.push({name: 'portia_login'})
+      } else {
+        this.$router.go(0)
+      }
+    }
+  },
+  computed: {
+    ...mapActions(useUsersStore, ['is_login'])
+  }
 })
 </script>
 
@@ -18,13 +41,19 @@ export default defineComponent({
       <li class="nav-item">
         <RouterLink :to="{name: 'goods_list'}" class="nav-link">상품 목록</RouterLink>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" v-if="!is_login">
         <RouterLink :to="{name: 'portia_join'}" class="nav-link">회원 가입</RouterLink>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" v-if="!is_login">
         <RouterLink :to="{name: 'portia_login'}" class="nav-link">로그인</RouterLink>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" v-if="is_login">
+        <RouterLink :to="{name: 'mypage'}" class="nav-link">마이페이지</RouterLink>
+      </li>
+      <li class="nav-item" v-if="is_login">
+        <a href="#" @click="portia_logout" class="nav-link">로그아웃</a>
+      </li>
+      <li class="nav-item" v-if="is_login">
         <RouterLink :to="{name: 'basket_list'}" class="nav-link">장바구니</RouterLink>
       </li>
     </ul>

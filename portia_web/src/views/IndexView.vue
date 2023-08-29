@@ -6,6 +6,8 @@ import FooterView from "../components/FooterView.vue";
 import { Carousel } from 'bootstrap';
 import {range} from "lodash-es";
 import {number_format} from "../lib";
+import {mapActions} from "pinia";
+import {useUsersStore} from "../stores/users";
 
 export default defineComponent({
   name: "IndexView",
@@ -32,12 +34,36 @@ export default defineComponent({
         goods_description: '잘나가는 책입니다',
         goods_ranking: 4
       }
-    ]
+    ],
+    input_data: {
+      username: '',
+      password: ''
+    }
   }),
   methods: {
     number_format,
     range (value) {
       return range(value)
+    },
+    ...mapActions(useUsersStore, ['login_action']),
+    login () {
+      this.login_action(this.input_data).then(result => {
+        if (result.success) {
+          if (this.$router.currentRoute.value.name !== 'index') {
+            this.$router.push({name: 'index'})
+          } else {
+            this.$router.go(0)
+          }
+        }
+      }).catch(error => {
+        alert('로그인에 실패했습니다')
+      })
+    }
+  },
+  computed: {
+    ...mapActions(useUsersStore, ['is_login']),
+    username () {
+      return localStorage.getItem('username')
     }
   },
   mounted() {
@@ -57,29 +83,28 @@ export default defineComponent({
       <div class="row">
         <div class="col-lg-3">
           <h1 class="my-4">Portia 쇼핑몰</h1>
-  <!--        {% if not session.email %}-->
-          <form method="post" action="/login">
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">이메일</label>
-                <div class="col-sm-8">
-                  <input type="email" class="form-control form-control-sm" id="inputEmail3" name="email">
-                </div>
+          <div v-if="!is_login">
+            <div class="row">
+              <label for="inputEmail3" class="col-sm-4 col-form-label">이메일</label>
+              <div class="col-sm-8">
+                <input type="email" class="form-control form-control-sm" id="inputEmail3" v-model="input_data.username">
               </div>
-              <div class="form-group row">
-                <label for="inputPassword3" class="col-sm-4 col-form-label">비밀번호</label>
-                <div class="col-sm-8">
-                  <input type="password" class="form-control form-control-sm" id="inputPassword3" name="password">
-                </div>
+            </div>
+            <div class="row">
+              <label for="inputPassword3" class="col-sm-4 col-form-label">비밀번호</label>
+              <div class="col-sm-8">
+                <input type="password" class="form-control form-control-sm" id="inputPassword3" v-model="input_data.password">
               </div>
-              <div class="form-group row">
-                <div class="col-sm-10 text-right">
-                  <button type="submit" class="btn btn-success">로그인</button>
-                </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-10 text-right">
+                <button type="button" class="btn btn-success" @click="login">로그인</button>
               </div>
-            </form>
-  <!--          {% else %}-->
-  <!--            {{ session['email'] }}님 로그인하셨습니다.-->
-  <!--          {% endif %}-->
+            </div>
+          </div>
+          <div v-if="is_login">
+            {{ username }}님 로그인하셨습니다
+          </div>
         </div>
         <!-- /.col-lg-3 -->
 

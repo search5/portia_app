@@ -86,5 +86,15 @@ def init_user():
         db.session.commit()
 
 
+@cli.command()
+def product_register():
+    from portia.models import db
+
+    app = create_app()
+    with app.app_context():
+        # TODO 상품 등록 기능 개발
+        pass
+
+
 if __name__ == "__main__":
     cli()

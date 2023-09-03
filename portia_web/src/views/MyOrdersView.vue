@@ -11,14 +11,14 @@ export default defineComponent({
   methods: {
     number_format,
     page_move (page_no) {
-      this.page_no = page_no
+      // this.page_no = page_no
+      this.$router.push({name: 'myorder', query: {page: page_no}})
 
       // TODO Server Call
     }
   },
   components: {PaginationItem, MyPageSlot, TopMenuView, FooterView},
   data: () => ({
-    page_no: 1,
     order_items: [
       {
         uuid: 'Portia2023AUG171540',
@@ -60,7 +60,7 @@ export default defineComponent({
         </tbody>
       </table>
 
-      <PaginationItem :page="page_no" :total="10" @page_click="page_move"></PaginationItem>
+      <PaginationItem :page="parseInt($route.query.page)" :total="10" @page_click="page_move"></PaginationItem>
     </MyPageSlot>
 
     <FooterView></FooterView>

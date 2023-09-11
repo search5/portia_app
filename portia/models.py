@@ -32,6 +32,7 @@ class DeliveryAddresses(db.Model, JSONMixin):
 
 class Goods(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
+    goods_code = db.Column(db.String(255))
     goods_name = db.Column(db.String(255))
     price = db.Column(db.Integer)
     goods_photo = db.Column(db.String(255))

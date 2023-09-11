@@ -5,9 +5,11 @@ import shutil
 import os
 from pathlib import Path
 from subprocess import run, PIPE
+
+import yaml
 from flask.cli import FlaskGroup
 from portia.factory import create_app as portia_app
-from portia.models import User
+from portia.models import User, Goods
 
 
 def create_app():
@@ -87,13 +89,70 @@ def init_user():
 
 
 @cli.command()
-def product_register():
+@click.argument('filename')
+def product_register(filename):
     from portia.models import db
 
     app = create_app()
     with app.app_context():
-        # TODO 상품 등록 기능 개발
-        pass
+        product_path = Path(filename)
+        if not product_path.exists():
+            click.echo("파일이 존재하지 않습니다")
+            return
+
+        with product_path.open() as yaml_file:
+            data = yaml.load(yaml_file, yaml.Loader)
+
+            # 이미 등록되어 있는 상품인지 확인
+            product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
+            if product_record:
+                click.echo('등록된 제품은 다시 등록할 수 없습니다')
+                return
+
+            product_record = Goods()
+
+            for key, val in data.items():
+                setattr(product_record, key, val)
+
+            db.session.add(product_record)
+
+        db.session.commit()
+
+        click.echo(product_record.id)
+
+
+@cli.command()
+@click.argument('filename')
+def product_edit(filename):
+    from portia.models import db
+
+    app = create_app()
+    with app.app_context():
+        product_path = Path(filename)
+        if not product_path.exists():
+            click.echo("파일이 존재하지 않습니다")
+            return
+
+        with product_path.open() as yaml_file:
+            data = yaml.load(yaml_file, yaml.Loader)
+            # 제품 정보 업데이트 시 상품 수량은 업데이트하지 않도록 한다.
+            if 'goods_cnt' in data:
+                del data['goods_cnt']
+
+            # 이미 등록되어 있는 상품인지 확인
+            product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
+            if not product_record:
+                click.echo('등록되지 않은 제품은 수정할 수 없습니다')
+                return
+
+            for key, val in data.items():
+                setattr(product_record, key, val)
+
+            # db.session.add(product_record)
+
+        db.session.commit()
+
+        click.echo(product_record.id)
 
 
 if __name__ == "__main__":

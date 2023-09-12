@@ -32,7 +32,7 @@ class DeliveryAddresses(db.Model, JSONMixin):
 
 class Goods(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
-    goods_code = db.Column(db.String(255))
+    goods_code = db.Column(db.String(255), unique=True)
     goods_name = db.Column(db.String(255))
     price = db.Column(db.Integer)
     goods_photo = db.Column(db.String(255))
@@ -50,7 +50,7 @@ class Orders(db.Model, JSONMixin):
 
 class OrdersItem(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
-    goods = db.Column(db.Integer, db.ForeignKey('goods.id'))
+    goods = db.Column(db.String(255), db.ForeignKey('goods.goods_code'))
     goods_price = db.Column(db.Integer)
     goods_cnt = db.Column(db.Integer)
 
@@ -67,6 +67,6 @@ class GoodsTracking(db.Model, JSONMixin):
 class Basket(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     username = db.Column(db.String(200), db.ForeignKey('user.username'))
-    goods = db.Column(db.Integer, db.ForeignKey('goods.id'))
+    goods = db.Column(db.String(255), db.ForeignKey('goods.goods_code'))
     goods_item = db.relationship("Goods")
     goods_cnt = db.Column(db.Integer)

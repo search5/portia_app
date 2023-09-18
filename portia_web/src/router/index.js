@@ -1,8 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import jwt_decode from "jwt-decode"
 
 const requireAuth = () => (to, from, next) => {
   let accessToken = localStorage.getItem('access_token')
   if (accessToken !== '') {
+    return next();
+  }
+
+  next('/login');
+};
+
+const requireAdminAuth = () => (to, from, next) => {
+  let accessToken = localStorage.getItem('access_token')
+  if (accessToken !== '' && jwt_decode(accessToken).is_admin) {
     return next();
   }
 
@@ -78,6 +88,30 @@ const router = createRouter({
       name: 'blank_image',
       component: () => import('../components/icons/EmptyPicture.vue'),
       props: true
+    },
+    {
+      path: '/admin/goods/register',
+      name: 'admin_goods_register',
+      component: () => import('../views/admin/GoodsRegisterView.vue'),
+      beforeEnter: requireAdminAuth()
+    },
+    {
+      path: '/admin/goods/:id',
+      name: 'admin_goods_view',
+      component: () => import('../views/admin/GoodsDetailView.vue'),
+      beforeEnter: requireAdminAuth()
+    },
+    {
+      path: '/admin/goods/:id/modify',
+      name: 'admin_goods_modify',
+      component: () => import('../views/admin/GoodsModifyView.vue'),
+      beforeEnter: requireAdminAuth()
+    },
+    {
+      path: '/admin/goods',
+      name: 'admin_goods_list',
+      component: () => import('../views/admin/GoodsListView.vue'),
+      beforeEnter: requireAdminAuth()
     }
   ]
 })

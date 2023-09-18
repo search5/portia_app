@@ -39,6 +39,7 @@ class Goods(db.Model, JSONMixin):
     goods_cnt = db.Column(db.Integer)
     goods_ranking = db.Column(db.Integer)
     goods_description = db.Column(db.Text)
+    created_date = db.Column(db.DateTime)
 
 
 class Orders(db.Model, JSONMixin):

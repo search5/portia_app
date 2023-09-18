@@ -88,6 +88,18 @@ def init_user():
         db.session.commit()
 
 
+def get_yaml(filename):
+    product_path = Path(filename)
+    if not product_path.exists():
+        click.echo("파일이 존재하지 않습니다")
+        return False, {}
+
+    with product_path.open() as yaml_file:
+        data = yaml.load(yaml_file, yaml.Loader)
+
+    return True, data
+
+
 @cli.command()
 @click.argument('filename')
 def product_register(filename):
@@ -95,26 +107,23 @@ def product_register(filename):
 
     app = create_app()
     with app.app_context():
-        product_path = Path(filename)
-        if not product_path.exists():
-            click.echo("파일이 존재하지 않습니다")
+        success, data = get_yaml(filename)
+
+        if not success:
             return
 
-        with product_path.open() as yaml_file:
-            data = yaml.load(yaml_file, yaml.Loader)
+        # 이미 등록되어 있는 상품인지 확인
+        product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
+        if product_record:
+            click.echo('등록된 제품은 다시 등록할 수 없습니다')
+            return
 
-            # 이미 등록되어 있는 상품인지 확인
-            product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
-            if product_record:
-                click.echo('등록된 제품은 다시 등록할 수 없습니다')
-                return
+        product_record = Goods()
 
-            product_record = Goods()
+        for key, val in data.items():
+            setattr(product_record, key, val)
 
-            for key, val in data.items():
-                setattr(product_record, key, val)
-
-            db.session.add(product_record)
+        db.session.add(product_record)
 
         db.session.commit()
 
@@ -128,27 +137,24 @@ def product_edit(filename):
 
     app = create_app()
     with app.app_context():
-        product_path = Path(filename)
-        if not product_path.exists():
-            click.echo("파일이 존재하지 않습니다")
+        success, data = get_yaml(filename)
+
+        if not success:
+            return
+        # 제품 정보 업데이트 시 상품 수량은 업데이트하지 않도록 한다.
+        if 'goods_cnt' in data:
+            del data['goods_cnt']
+
+        # 이미 등록되어 있는 상품인지 확인
+        product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
+        if not product_record:
+            click.echo('등록되지 않은 제품은 수정할 수 없습니다')
             return
 
-        with product_path.open() as yaml_file:
-            data = yaml.load(yaml_file, yaml.Loader)
-            # 제품 정보 업데이트 시 상품 수량은 업데이트하지 않도록 한다.
-            if 'goods_cnt' in data:
-                del data['goods_cnt']
+        for key, val in data.items():
+            setattr(product_record, key, val)
 
-            # 이미 등록되어 있는 상품인지 확인
-            product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
-            if not product_record:
-                click.echo('등록되지 않은 제품은 수정할 수 없습니다')
-                return
-
-            for key, val in data.items():
-                setattr(product_record, key, val)
-
-            # db.session.add(product_record)
+        # db.session.add(product_record)
 
         db.session.commit()
 

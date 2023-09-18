@@ -75,7 +75,7 @@ def login():
     if not (user and (bcrypt.checkpw(password_encoded, user[0].password.encode('utf-8')))):
         return jsonify({"msg": "Bad username or password"}), 401
 
-    access_token = create_access_token(identity=username)
+    access_token = create_access_token(identity=username, additional_claims={'is_admin': user[0].is_admin == "Y"})
     refresh_token = create_refresh_token(identity=username)
 
     return jsonify(access_token=access_token, refresh_token=refresh_token, username=username)

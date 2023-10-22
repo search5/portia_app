@@ -12,13 +12,6 @@ export default defineComponent({
     item: {
       id: 1,
       big_image: '/api/placeholder/525x450',
-      thumbnails: [
-        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
-        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
-        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
-        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'},
-        {small: '/api/placeholder/60x60', big: '/api/placeholder/700x400'}
-      ],
       goods_name: '상품 1',
       price: 30000,
       goods_description: '올바른 상품입니다',
@@ -46,7 +39,7 @@ export default defineComponent({
       <div class="row">
         <div class="col-12">
           <form>
-            <input type="hidden" name="goods_id" value="{ item.id }}">
+            <input type="hidden" name="goods_id" value="{ item.id }">
             <div class="card mb-4">
               <div class="row">
                 <aside class="col-sm-5 border-right">
@@ -56,9 +49,6 @@ export default defineComponent({
                         <a href="#"><img :src="item.big_image"></a>
                       </div>
                     </div> <!-- slider-product.// -->
-                    <div class="img-small-wrap">
-                      <div class="item-gallery" :key="index" v-for="(entry, index) in item.thumbnails"><img :src="entry.small"></div>
-                    </div> <!-- slider-nav.// -->
                   </article> <!-- gallery-wrap .end// -->
                 </aside>
                 <aside class="col-sm-7">
@@ -69,21 +59,13 @@ export default defineComponent({
                       <span class="price h3 text-warning">
                         <span class="num">{{ number_format(item.price) }}</span>
                       </span>
-                      <span>원</span>
+                      <span>원</span>f
                     </p> <!-- price-detail-wrap .// -->
 
                     <dl class="item-property">
                       <dt>Description</dt>
                       <dd><p>{{ item.goods_description }}</p></dd>
                     </dl>
-
-                    <span class="text-muted" :key="index" v-for="(val, index) in range(item.goods_ranking)">
-                      &#9733;
-                    </span>
-
-                    <span class="text-muted" :key="index" v-for="(val, index) in range(5- item.goods_ranking)">
-                      &#9734;
-                    </span>
                     <!-- item-property-hor .// -->
                     <hr>
 

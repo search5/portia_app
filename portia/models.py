@@ -37,7 +37,6 @@ class Goods(db.Model, JSONMixin):
     price = db.Column(db.Integer)
     goods_photo = db.Column(db.String(255))
     goods_cnt = db.Column(db.Integer)
-    goods_ranking = db.Column(db.Integer)
     goods_description = db.Column(db.Text)
     created_date = db.Column(db.DateTime)
 

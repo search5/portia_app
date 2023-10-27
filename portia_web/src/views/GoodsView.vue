@@ -15,15 +15,13 @@ export default defineComponent({
         thumbnail: '/api/placeholder/700x400',
         goods_name: '상품 1',
         price: 30000,
-        goods_description: '올바른 상품입니다',
-        goods_ranking: 3
+        goods_description: '올바른 상품입니다'
       }, {
         id: 2,
         thumbnail: '/api/placeholder/700x400',
         goods_name: '상품 2',
         price: 28000,
-        goods_description: '잘나가는 책입니다',
-        goods_ranking: 4
+        goods_description: '잘나가는 책입니다'
       }
     ]
   }),
@@ -54,15 +52,7 @@ export default defineComponent({
                   <h5>{{ number_format(item.price) }}</h5>
                   <p class="card-text">{{ item.goods_description }}</p>
                 </div>
-                <div class="card-footer">
-                  <small class="text-muted" :key="index" v-for="(val, index) in range(item.goods_ranking)">
-                    &#9733;
-                  </small>
-
-                  <small class="text-muted" :key="index" v-for="(val, index) in range(5- item.goods_ranking)">
-                    &#9734;
-                  </small>
-                </div>
+                <div class="card-footer"></div>
               </div>
             </div>
           </div>

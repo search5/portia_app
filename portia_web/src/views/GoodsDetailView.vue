@@ -14,8 +14,7 @@ export default defineComponent({
       big_image: '/api/placeholder/525x450',
       goods_name: '상품 1',
       price: 30000,
-      goods_description: '올바른 상품입니다',
-      goods_ranking: 3
+      goods_description: '올바른 상품입니다'
     }
   }),
   methods: {

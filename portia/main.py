@@ -94,7 +94,7 @@ def short():
     return "short!"
 
 
-@app.route('/api/logout/')
+@app.route('/api/logout')
 @jwt_required()
 def logout():
     """Logout view"""

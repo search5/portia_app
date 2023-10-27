@@ -1,5 +1,5 @@
-from flask import Flask, g, render_template, redirect
-from flask_jwt_extended import JWTManager, current_user, get_jwt, jwt_required
+from flask import Flask
+from flask_jwt_extended import JWTManager
 from portia.models import db
 import json
 

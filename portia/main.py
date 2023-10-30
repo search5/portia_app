@@ -65,8 +65,8 @@ def user_join():
 
 @app.route("/api/login", methods=["PATCH"])
 def login():
-    username = request.json.get("username", None)
-    password = request.json.get("password", None)
+    username = request.json.get("username")
+    password = request.json.get("password", '')
 
     user = db.session.execute(
         db.select(User).filter(User.username == username)).first()

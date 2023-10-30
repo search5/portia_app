@@ -1,9 +1,13 @@
+import time
+
+
 def test_login_success(client):
     res = client.patch('/api/login', json={
         'username': 'jiho',
         'password': 'jiho'
     })
     assert res.status_code == 200, res.text
+
 
 def test_login_failure_badname(client):
     res = client.patch("/api/login", json={
@@ -12,6 +16,7 @@ def test_login_failure_badname(client):
     })
     assert res.status_code == 401, res.text
 
+
 def test_login_failure_badpassword(client):
     res = client.patch('/api/login', json={
         'username': 'jiho',
@@ -19,6 +24,37 @@ def test_login_failure_badpassword(client):
     })
     assert res.status_code == 401, res.text
 
+
 def test_login_not_sendinfo(client):
     res = client.patch('/api/login', json={})
     assert res.status_code == 401, res.text
+
+def test_logout(client):
+    res = client.patch('/api/login', json={
+        'username': 'jiho',
+        'password': 'jiho'
+    })
+    assert res.status_code == 200, res.text
+
+    assert 'access_token' in res.get_json(), res.get_json()
+    access_token = res.get_json()['access_token']
+
+    time.sleep(1)
+
+    res = client.get('/api/logout', headers=[{"Authorization", f"Bearer {access_token}"}])
+    assert res.status_code == 302, res.text
+
+def test_auth_request(client):
+    res = client.patch('/api/login', json={
+        'username': 'jiho',
+        'password': 'jiho'
+    })
+    assert res.status_code == 200, res.text
+
+    assert 'access_token' in res.get_json(), res.get_json()
+    access_token = res.get_json()['access_token']
+
+    time.sleep(1)
+
+    res = client.get('/api/protected', headers=[{"Authorization", f"Bearer {access_token}"}])
+    assert res.status_code == 200, res.text

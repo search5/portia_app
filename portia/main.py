@@ -15,7 +15,7 @@ app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 @app.route("/api/users/join", methods=["POST"])
 def user_join():
     schema = {'real_name': {'type': 'string', 'minlength': 1},
-              'real_email': {'type': 'string', 'minlength': 1},
+              'real_email': {'type': 'string', 'minlength': 1, 'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'},
               'user_password': {'type': 'string', 'minlength': 1},
               'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
               'addresses': {'type': 'string', 'minlength': 5},

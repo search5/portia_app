@@ -15,7 +15,8 @@ app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 @app.route("/api/users/join", methods=["POST"])
 def user_join():
     schema = {'real_name': {'type': 'string', 'minlength': 1},
-              'real_email': {'type': 'string', 'minlength': 1, 'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'},
+              'real_email': {'type': 'string', 'minlength': 1,
+                             'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'},
               'user_password': {'type': 'string', 'minlength': 1},
               'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
               'addresses': {'type': 'string', 'minlength': 5},
@@ -65,8 +66,17 @@ def user_join():
 
 @app.route("/api/login", methods=["PATCH"])
 def login():
-    username = request.json.get("username")
-    password = request.json.get("password", '')
+    schema = {'username': {'type': 'string', 'minlength': 1},
+              'password': {'type': 'string', 'minlength': 1}}
+    v = Validator(schema)
+
+    req_json = request.get_json()
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
+    username = req_json.get("username")
+    password = req_json.get("password", '')
 
     user = db.session.execute(
         db.select(User).filter(User.username == username)).first()
@@ -107,9 +117,32 @@ def logout():
 @app.route('/api/placeholder', defaults={'size': '300x200'})
 @app.route('/api/placeholder/<size>')
 def placeholder_img(size):
+    if ('x' not in size) or (size.count('x') != 1):
+        return "Bad Request", 400
     width, height = size.split("x")
     bg_fill = '#cccccc'
     txt_fill = '#9c9c9c'
     txt = size
 
-    return render_template('placeholder.jinja2', width=width, height=height, bg_fill=bg_fill, txt_fill=txt_fill, txt=txt), (('Content-Type', 'image/svg+xml'),)
+    return render_template('placeholder.jinja2', width=width, height=height, bg_fill=bg_fill, txt_fill=txt_fill,
+                           txt=txt), (('Content-Type', 'image/svg+xml'),)
+
+
+@app.route('/admin/goods/register', methods=["POST"])
+def admin_goods_register():
+    return 'Not Implement', 400
+
+
+@app.route('/admin/goods/<goods_code>/modify', methods=["PUT"])
+def admin_goods_modify(goods_code):
+    return 'Not Implement', 400
+
+
+@app.route('/admin/goods/<goods_code>/delete', methods=["DELETE"])
+def admin_goods_delete(goods_code):
+    return 'Not Implement', 400
+
+
+@app.route('/admin/goods', methods=["GET"])
+def admin_goods_list():
+    return 'Not Implement', 400

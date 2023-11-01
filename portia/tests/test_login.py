@@ -30,6 +30,14 @@ def test_login_not_sendinfo(client):
     assert res.status_code == 401, res.text
 
 
+def test_login_not_sendinfo2(client):
+    res = client.patch('/api/login', json={
+        'username': '',
+        'password': ''
+    })
+    assert res.status_code == 400, res.text
+
+
 def test_logout(client):
     res = client.patch('/api/login', json={
         'username': 'jiho',

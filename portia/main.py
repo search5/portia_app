@@ -1,13 +1,15 @@
+import datetime
 import os
 
 import bcrypt
 from cerberus import Validator
 from flask import redirect, request, jsonify, render_template
-from flask_jwt_extended import jwt_required, get_jwt, create_access_token, get_jwt_identity, create_refresh_token
+from flask_jwt_extended import (jwt_required, get_jwt, create_access_token,
+                                get_jwt_identity, create_refresh_token)
 from sqlalchemy import func
 
 from portia.factory import create_app
-from portia.models import db, User, DeliveryAddresses
+from portia.models import db, User, DeliveryAddresses, Goods
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 
@@ -130,6 +132,40 @@ def placeholder_img(size):
 
 @app.route('/admin/goods/register', methods=["POST"])
 def admin_goods_register():
+    schema = {'goods_name': {'type': 'string', 'minlength': 1, 'required': True},
+              'price': {'type': 'number', 'minlength': 3, 'required': True},
+              'goods_cnt': {'type': 'number', 'minlength': 1, 'required': True},
+              'goods_description': {'type': 'string', 'minlength': 1, 'required': True}}
+    v = Validator(schema)
+
+    if not v.validate(request.get_json()):
+        print(v.errors)
+        return jsonify(success=False), 400
+
+    req_json = request.get_json()
+
+    goods = Goods()
+    goods.goods_code = f'GD{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
+    goods.goods_name = req_json.get('goods_name')
+    goods.price = req_json.get('price', 0)
+    goods.goods_cnt = req_json.get('goods_cnt', 0)
+    goods.goods_description = req_json.get('goods_description')
+    goods.created_date = db.func.now()
+
+    db.session.add(goods)
+    db.session.commit()
+
+    return jsonify(success=True, goods_code=goods.goods_code)
+
+
+@app.route('/admin/goods/<goods_code>/upload', methods=["POST"])
+def admin_goods_img_upload(goods_code):
+    schema = {'goods_photo': {'type': 'binary', 'nullable': True}}
+    v = Validator(schema)
+
+    if v.validate(request.get_json()):
+        pass
+
     return 'Not Implement', 400
 
 

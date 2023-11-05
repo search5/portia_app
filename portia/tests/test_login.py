@@ -62,7 +62,5 @@ def test_auth_request(client):
     assert 'access_token' in res.get_json(), res.get_json()
     authorization = f"Bearer {res.get_json()['access_token']}"
 
-    # time.sleep(1)
-
     res = client.get('/api/protected', headers=[("Authorization", authorization)])
     assert res.status_code == 200, res.text

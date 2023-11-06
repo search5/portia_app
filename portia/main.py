@@ -194,16 +194,70 @@ def admin_goods_img_upload(goods_code):
 @app.route('/admin/goods/<goods_code>/modify', methods=["PUT"])
 @admin_required()
 def admin_goods_modify(goods_code):
-    return 'Not Implement', 400
+    schema = {'goods_name': {'type': 'string', 'minlength': 1, 'required': True},
+              'price': {'type': 'number', 'minlength': 3, 'required': True},
+              'goods_cnt': {'type': 'number', 'minlength': 1, 'required': True},
+              'goods_description': {'type': 'string', 'minlength': 1, 'required': True}}
+    v = Validator(schema)
+
+    if not v.validate(request.get_json()):
+        return jsonify(success=False), 400
+
+    req_json = request.get_json()
+
+    goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    if not goods:
+        return "Not Found", 404
+    goods = goods[0]
+    goods.goods_name = req_json.get('goods_name')
+    goods.price = req_json.get('price', 0)
+    goods.goods_cnt = req_json.get('goods_cnt', 0)
+    goods.goods_description = req_json.get('goods_description')
+
+    db.session.add(goods)
+    db.session.commit()
+
+    return jsonify(success=True, goods_code=goods_code)
 
 
 @app.route('/admin/goods/<goods_code>/delete', methods=["DELETE"])
 @admin_required()
 def admin_goods_delete(goods_code):
-    return 'Not Implement', 400
+    goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    if not goods:
+        return "Not Found", 404
+    db.session.delete(goods[0])
+    db.session.commit()
+
+    return jsonify(success=True, goods_code=goods_code)
 
 
 @app.route('/admin/goods', methods=["GET"])
 @admin_required()
 def admin_goods_list():
-    return 'Not Implement', 400
+    query = db.select(Goods).order_by(db.desc(Goods.created_date))
+
+    try:
+        page = db.paginate(query, per_page=10)
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 400
+
+    resp = {'items': []}
+    for item in ('first', 'has_next', 'has_prev', 'last', 'next_num', 'page',
+                 'pages', 'per_page', 'prev_num', 'total'):
+        resp[item] = getattr(page, item)
+
+    # Page Results
+    for row in page.items:
+        resp['items'].append({
+            'id': row.id,
+            'goods_code': row.goods_code,
+            'goods_name': row.goods_name,
+            'price': row.price,
+            'goods_photo': row.goods_photo,
+            'goods_cnt': row.goods_cnt,
+            'goods_description': row.goods_description,
+            'created_date': row.created_date.strftime("%Y%m%d %H:%M")
+        })
+
+    return jsonify(success=True, data=resp)

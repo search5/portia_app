@@ -106,39 +106,45 @@ def test_goods_modify_success(client, admin_authorization):
     assert res.status_code == 200, res.status_code
 
 
-def test_goods_modify_failure(client, admin_authorization):
-    # 상품 수정 기능
-    # res = client.put("/admin/goods/1/modify", json={})
-    # assert res.status_code == 200, res.status_code
-    pass
+def test_goods_modify_failure_invalid_goods(client, admin_authorization):
+    # 상품 수정 기능(잘못된 상품 아이디)
+    res = client.put("/admin/goods/like/modify", json={
+        'goods_name': '상품 2-1',
+        'price': 50000,
+        'goods_cnt': 2,
+        'goods_description': '상품 2번 수정 테스트'
+    }, headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 404, res.status_code
 
 
-def test_goods_modify_notsend_failure(client, admin_authorization):
-    # 상품 수정 기능
-    # res = client.put("/admin/goods/1/modify", json={})
-    # assert res.status_code == 200, res.status_code
-    pass
+def test_goods_modify_failure_invalid_data(client, admin_authorization):
+    # 상품 수정 기능(잘못된 데이터 전송)
+    res = client.put("/admin/goods/1/modify", json={}, headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 400, res.status_code
 
 
 def test_goods_delete_success(client, admin_authorization):
     # 상품 삭제 기능
-    res = client.delete("/admin/goods/1/delete", json={}, headers=[("Authorization", admin_authorization)])
+    goods_code = goods_register(client, admin_authorization)
+
+    res = client.delete(f"/admin/goods/{goods_code}/delete",
+                        headers=[("Authorization", admin_authorization)])
     assert res.status_code == 200, res.status_code
 
 
 def test_goods_delete_failure(client, admin_authorization):
     # 상품 삭제 기능
     res = client.delete("/admin/goods/1/delete", json={}, headers=[("Authorization", admin_authorization)])
-    assert res.status_code == 200, res.status_code
+    assert res.status_code == 404, res.status_code
 
 
 def test_goods_list_success(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
-    res = client.get("/admin/goods", json={}, headers=[("Authorization", admin_authorization)])
+    res = client.get("/admin/goods", headers=[("Authorization", admin_authorization)])
     assert res.status_code == 200, res.status_code
 
 
 def test_goods_list_failure(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
-    res = client.get("/admin/goods", json={}, headers=[("Authorization", admin_authorization)])
-    assert res.status_code == 200, res.status_code
+    res = client.get("/admin/goods?page=alpha", headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 400, res.text

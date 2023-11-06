@@ -1,8 +1,8 @@
-import datetime
 import os
+import uuid
+from pathlib import Path
 
 import bcrypt
-from cerberus import Validator
 from flask import redirect, request, jsonify, render_template
 from flask_jwt_extended import (jwt_required, get_jwt, create_access_token,
                                 get_jwt_identity, create_refresh_token)
@@ -10,6 +10,8 @@ from sqlalchemy import func
 
 from portia.factory import create_app
 from portia.models import db, User, DeliveryAddresses, Goods
+from portia.utils.jwt_utils import admin_required
+from portia.utils.validator_utils import Validator
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 
@@ -126,11 +128,13 @@ def placeholder_img(size):
     txt_fill = '#9c9c9c'
     txt = size
 
-    return render_template('placeholder.jinja2', width=width, height=height, bg_fill=bg_fill, txt_fill=txt_fill,
-                           txt=txt), (('Content-Type', 'image/svg+xml'),)
+    return (render_template('placeholder.jinja2', width=width, height=height,
+                            bg_fill=bg_fill, txt_fill=txt_fill, txt=txt),
+            (('Content-Type', 'image/svg+xml'),))
 
 
 @app.route('/admin/goods/register', methods=["POST"])
+@admin_required()
 def admin_goods_register():
     schema = {'goods_name': {'type': 'string', 'minlength': 1, 'required': True},
               'price': {'type': 'number', 'minlength': 3, 'required': True},
@@ -139,13 +143,12 @@ def admin_goods_register():
     v = Validator(schema)
 
     if not v.validate(request.get_json()):
-        print(v.errors)
         return jsonify(success=False), 400
 
     req_json = request.get_json()
 
     goods = Goods()
-    goods.goods_code = f'GD{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}'
+    goods.goods_code = f'GD{uuid.uuid4()}'
     goods.goods_name = req_json.get('goods_name')
     goods.price = req_json.get('price', 0)
     goods.goods_cnt = req_json.get('goods_cnt', 0)
@@ -159,26 +162,48 @@ def admin_goods_register():
 
 
 @app.route('/admin/goods/<goods_code>/upload', methods=["POST"])
+@admin_required()
 def admin_goods_img_upload(goods_code):
-    schema = {'goods_photo': {'type': 'binary', 'nullable': True}}
-    v = Validator(schema)
+    if 'goods_photo' not in request.files:
+        return "Bad Request", 400
 
-    if v.validate(request.get_json()):
-        pass
+    upload_file = request.files['goods_photo']
+    upload_filename, upload_file_ext = os.path.splitext(upload_file.filename)
 
-    return 'Not Implement', 400
+    if upload_file_ext not in (".jpeg", ".jpg", ".png", ".gif"):
+        return "Bad Request", 400
+
+    Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+
+    try:
+        save_filename = Path(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4()}{upload_file_ext}')
+        upload_file.save(save_filename)
+
+        goods_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()[0]
+        goods_record.goods_photo = save_filename.name
+
+        # 데이터베이스에서 저장된 파일 이름 반영
+        db.session.add(goods_record)
+        db.session.commit()
+
+        return jsonify(success=True)
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 400
 
 
 @app.route('/admin/goods/<goods_code>/modify', methods=["PUT"])
+@admin_required()
 def admin_goods_modify(goods_code):
     return 'Not Implement', 400
 
 
 @app.route('/admin/goods/<goods_code>/delete', methods=["DELETE"])
+@admin_required()
 def admin_goods_delete(goods_code):
     return 'Not Implement', 400
 
 
 @app.route('/admin/goods', methods=["GET"])
+@admin_required()
 def admin_goods_list():
     return 'Not Implement', 400

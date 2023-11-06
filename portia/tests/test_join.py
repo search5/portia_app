@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture()
-def cleanup_success():
+def cleanup_login():
     from portia.models import DeliveryAddresses, db, User
     from portia.main import app
 
@@ -19,7 +19,7 @@ def cleanup_success():
         db.session.commit()
 
 
-def test_join_success(client, cleanup_success):
+def test_join_success(client, cleanup_login):
     # cleanup_success
     res = client.post("/api/users/join", json={
         'real_name': '이지호',
@@ -32,7 +32,7 @@ def test_join_success(client, cleanup_success):
     assert res.status_code == 200, res.text
 
 
-def test_join_failure_duplicate(client, cleanup_success):
+def test_join_failure_duplicate(client, cleanup_login):
     # cleanup_success
     send_data={
         'real_name': '이지호',
@@ -60,4 +60,3 @@ def test_join_failed_validate(client):
         'detail_address': '일청로 91번길'
     })
     assert res.status_code == 400, res.text
-

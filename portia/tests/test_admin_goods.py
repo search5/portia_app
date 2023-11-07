@@ -66,20 +66,24 @@ def test_goods_image_upload(client, admin_authorization):
 
     assert res.status_code == 200, res.text
 
+
 def test_goods_image_upload_failure_not_allowed_file(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={'goods_photo': (io.BytesIO(b""), "image.php")},
                       headers=[("Authorization", admin_authorization)])
     assert res.status_code == 400
+
 
 def test_goods_image_upload_failure_not_upload(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={},
                       headers=[("Authorization", admin_authorization)])
     assert res.status_code == 400
 
+
 def test_goods_image_upload_failure_bad_code(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={'goods_photo': (io.BytesIO(b""), "image.jpg")},
                       headers=[("Authorization", admin_authorization)])
     assert res.status_code == 400
+
 
 def goods_register(client, admin_authorization):
     res = client.post("/admin/goods/register", json={
@@ -148,3 +152,9 @@ def test_goods_list_failure(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
     res = client.get("/admin/goods?page=alpha", headers=[("Authorization", admin_authorization)])
     assert res.status_code == 400, res.text
+
+
+def test_goods_list_success_query_str(client, admin_authorization):
+    # 등록된 상품 목록 반환 기능
+    res = client.get("/admin/goods?query=alpha", headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 200, res.text

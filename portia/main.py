@@ -6,7 +6,7 @@ import bcrypt
 from flask import redirect, request, jsonify, render_template
 from flask_jwt_extended import (jwt_required, get_jwt, create_access_token,
                                 get_jwt_identity, create_refresh_token)
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from portia.factory import create_app
 from portia.models import db, User, DeliveryAddresses, Goods
@@ -235,7 +235,13 @@ def admin_goods_delete(goods_code):
 @app.route('/admin/goods', methods=["GET"])
 @admin_required()
 def admin_goods_list():
-    query = db.select(Goods).order_by(db.desc(Goods.created_date))
+    query_str = request.args.get('query')
+
+    query = db.select(Goods)
+    if query_str:
+        query = query.filter(or_(Goods.goods_name.ilike(f'%{query_str}%'),
+                                 Goods.goods_description.ilike(f'%{query_str}%')))
+    query = query.order_by(db.desc(Goods.created_date))
 
     try:
         page = db.paginate(query, per_page=10)

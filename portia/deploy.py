@@ -101,6 +101,25 @@ def get_yaml(filename):
 
 
 @cli.command()
+def goods_dummy():
+    from portia.models import db
+
+    app = create_app()
+    with app.app_context():
+        for i in range(10):
+            product_record = Goods()
+            product_record.goods_code = f'TS{i}'
+            product_record.goods_name = '상품 2'
+            product_record.price = 30000
+            product_record.goods_cnt = 30
+            product_record.goods_description = '상품 2번 등록 테스트'
+            product_record.created_date = db.func.now()
+            db.session.add(product_record)
+
+            db.session.commit()
+
+
+@cli.command()
 @click.argument('filename')
 def product_register(filename):
     from portia.models import db

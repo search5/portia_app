@@ -24,40 +24,63 @@ def test_cart_listing_failure(client):
 
 
 def test_cart_add_success(client):
-    res = 500
-    assert res == 200, "Not Implemented"
+    authorization = login_auth(client)
+
+    for i in range(3):
+        res = client.post("/carts/add", json={
+            "goods_code": f"TG{i}",
+            "goods_cnt": 1
+        }, headers=[authorization])
+        assert res.status_code == 200, res.text
 
 
 def test_cart_add_failure(client):
     authorization = login_auth(client)
 
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.post("/carts/add", json={
+        "goods_code": "TG1000",
+        "goods_cnt": 1
+    }, headers=[authorization])
+    assert res.status_code == 400, res.text
 
 
 def test_cart_modify_success(client):
     authorization = login_auth(client)
 
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.put("/carts/TG2", json={
+        "goods_cnt": 3
+    }, headers=[authorization])
+
+    assert res.status_code == 200, res.text
 
 
 def test_cart_modify_failure(client):
     authorization = login_auth(client)
 
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.put("/carts/TG10", json={
+        "goods_cnt": 3
+    }, headers=[authorization])
+
+    assert res.status_code == 400, res.text
+
+    res = client.put("/carts/TG2", json={
+        "goods_cnt": -1
+    }, headers=[authorization])
+
+    assert res.status_code == 400, res.text
 
 
 def test_cart_delete_success(client):
     authorization = login_auth(client)
 
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.delete("/carts/TG2", json={}, headers=[authorization])
+
+    assert res.status_code == 200, res.text
 
 
 def test_cart_delete_failure(client):
     authorization = login_auth(client)
 
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.delete("/carts/TG100", json={}, headers=[authorization])
+
+    assert res.status_code == 400, res.text

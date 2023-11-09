@@ -267,3 +267,24 @@ def admin_goods_list():
         })
 
     return jsonify(success=True, data=resp)
+
+
+@app.route('/admin/goods/<goods_code>', methods=["GET"])
+@admin_required()
+def admin_goods_view(goods_code):
+    query_res = db.session.execute(
+        db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    if not query_res:
+        return "NOT FOUND", 404
+    row = query_res[0]
+
+    return jsonify({
+        'id': row.id,
+        'goods_code': row.goods_code,
+        'goods_name': row.goods_name,
+        'price': row.price,
+        'goods_photo': row.goods_photo,
+        'goods_cnt': row.goods_cnt,
+        'goods_description': row.goods_description,
+        'created_date': row.created_date.strftime("%Y%m%d %H:%M")
+    })

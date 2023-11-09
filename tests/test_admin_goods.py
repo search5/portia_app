@@ -162,11 +162,13 @@ def test_admin_goods_list_success_query_str(client, admin_authorization):
 
 def test_admin_goods_get_success(client, admin_authorization):
     # 등록된 상품의 상세 정보 가져오기
-    res = 500
-    assert res == 200, "Not Implemented"
+    goods_code = goods_register(client, admin_authorization)
+
+    res = client.get(f"/admin/goods/{goods_code}", headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 200, res.status_code
 
 
 def test_admin_goods_get_failure_bad_code(client, admin_authorization):
     # 등록된 상품의 상세 정보 가져오기
-    res = 500
-    assert res == 200, "Not Implemented"
+    res = client.get("/admin/goods/alpha", headers=[("Authorization", admin_authorization)])
+    assert res.status_code == 404, res.status_code

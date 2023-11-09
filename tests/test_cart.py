@@ -61,7 +61,7 @@ def test_cart_modify_failure(client):
         "goods_cnt": 3
     }, headers=[authorization])
 
-    assert res.status_code == 400, res.text
+    assert res.status_code == 404, res.text
 
     res = client.put("/carts/TG2", json={
         "goods_cnt": -1
@@ -83,4 +83,4 @@ def test_cart_delete_failure(client):
 
     res = client.delete("/carts/TG100", json={}, headers=[authorization])
 
-    assert res.status_code == 400, res.text
+    assert res.status_code == 404, res.text

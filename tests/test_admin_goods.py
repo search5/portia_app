@@ -1,5 +1,4 @@
 import io
-import os
 
 import pytest
 
@@ -13,6 +12,8 @@ def cleanup_goods(client):
     with app.app_context():
         r = db.session.query(Goods)
         for row in r:
+            if row.goods_code.startswith("TS"):
+                continue
             db.session.delete(row)
 
         db.session.commit()

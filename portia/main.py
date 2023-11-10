@@ -7,9 +7,10 @@ from flask import redirect, request, jsonify, render_template
 from flask_jwt_extended import (jwt_required, get_jwt, create_access_token,
                                 get_jwt_identity, create_refresh_token)
 from sqlalchemy import func, or_
+from sqlalchemy.exc import NoResultFound
 
 from portia.factory import create_app
-from portia.models import db, User, DeliveryAddresses, Goods
+from portia.models import db, User, DeliveryAddresses, Goods, Basket
 from portia.utils.jwt_utils import admin_required
 from portia.utils.validator_utils import Validator
 
@@ -20,7 +21,7 @@ app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 def user_join():
     schema = {'real_name': {'type': 'string', 'minlength': 1},
               'real_email': {'type': 'string', 'minlength': 1,
-                             'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'},
+                             'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'},
               'user_password': {'type': 'string', 'minlength': 1},
               'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
               'addresses': {'type': 'string', 'minlength': 5},
@@ -288,3 +289,86 @@ def admin_goods_view(goods_code):
         'goods_description': row.goods_description,
         'created_date': row.created_date.strftime("%Y%m%d %H:%M")
     })
+
+@app.route("/carts")
+@jwt_required()
+def carts():
+    current_user = get_jwt_identity()
+
+    records = db.session.execute(
+        db.select(Basket, Goods).join(Goods).filter(Basket.username == current_user)
+    )
+
+    items = [{
+        'goods_code': item[1].goods_code,
+        'goods_name': item[1].goods_name,
+        'price': item[1].price,
+        'goods_photo': item[1].goods_photo,
+        'goods_description': item[1].goods_description,
+        'cart_cnt': item[0].goods_cnt
+    } for item in records]
+
+    return jsonify(success=True, data=items)
+
+
+@app.route("/carts", methods=["POST"])
+@jwt_required()
+def carts_add():
+    req_json = request.get_json()
+
+    try:
+        db.session.execute(
+            db.select(Goods).filter(Goods.goods_code == req_json.get('goods_code'))
+        ).scalar_one()
+    except NoResultFound:
+        return jsonify(success=False), 400
+
+    basket = Basket()
+    basket.goods = req_json.get('goods_code')
+    basket.goods_cnt = req_json.get('goods_cnt')
+    basket.username = get_jwt_identity()
+
+    db.session.add(basket)
+    db.session.commit()
+
+    return jsonify(success=True)
+
+
+@app.route("/carts/<goods_code>", methods=["PUT"])
+@jwt_required()
+def carts_modify(goods_code):
+    cart_goods = db.session.execute(
+        db.select(Basket).filter(Basket.goods == goods_code,
+                                 Basket.username == get_jwt_identity())
+    ).scalar_one_or_none()
+
+    new_cart_goods_cnt = request.get_json().get('goods_cnt')
+
+    if not cart_goods:
+        return jsonify(success=False), 404
+
+    if new_cart_goods_cnt < 0:
+        return jsonify(success=False), 400
+
+    cart_goods.goods_cnt = new_cart_goods_cnt
+    db.session.add(cart_goods)
+    db.session.commit()
+
+    return jsonify(success=True)
+
+
+@app.route("/carts/<goods_code>", methods=["DELETE"])
+@jwt_required()
+def carts_delete(goods_code):
+    cart_goods = db.session.execute(
+        db.select(Basket).filter(Basket.goods == goods_code,
+                                 Basket.username == get_jwt_identity())
+    ).scalar_one_or_none()
+
+    if not cart_goods:
+        return jsonify(success=False), 404
+
+    db.session.delete(cart_goods)
+    db.session.commit()
+
+    return jsonify(success=True)

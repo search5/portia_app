@@ -61,15 +61,6 @@ class OrdersItem(db.Model, JSONMixin):
     goods_cnt = db.Column(db.Integer)
 
 
-class GoodsTracking(db.Model, JSONMixin):
-    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    delivery_start_date = db.Column(db.DateTime)
-    delivery_end_date = db.Column(db.DateTime)
-    tracking_number = db.Column(db.String(50))
-    tracking_status = db.Column(db.String(30))
-
-
 class Basket(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     username = db.Column(db.String(200), db.ForeignKey('user.username'))

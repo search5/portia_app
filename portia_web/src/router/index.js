@@ -54,12 +54,6 @@ const router = createRouter({
       beforeEnter: requireAuth()
     },
     {
-      path: '/tracking',
-      name: 'tracking_view',
-      component: () => import('../views/TrackingView.vue'),
-      beforeEnter: requireAuth()
-    },
-    {
       path: '/mypage',
       name: 'mypage',
       component: () => import('../views/MyPageView.vue'),

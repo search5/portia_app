@@ -13,20 +13,14 @@ from portia.factory import create_app
 from portia.models import db, User, DeliveryAddresses, Goods, Basket
 from portia.utils.jwt_utils import admin_required
 from portia.utils.validator_utils import Validator
+from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 
 
 @app.route("/api/users/join", methods=["POST"])
 def user_join():
-    schema = {'real_name': {'type': 'string', 'minlength': 1},
-              'real_email': {'type': 'string', 'minlength': 1,
-                             'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'},
-              'user_password': {'type': 'string', 'minlength': 1},
-              'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
-              'addresses': {'type': 'string', 'minlength': 5},
-              'detail_address': {'type': 'string', 'minlength': 5}}
-    v = Validator(schema)
+    v = Validator(user_join_schema)
 
     req_json = request.get_json()
 
@@ -71,9 +65,7 @@ def user_join():
 
 @app.route("/api/login", methods=["PATCH"])
 def login():
-    schema = {'username': {'type': 'string', 'minlength': 1},
-              'password': {'type': 'string', 'minlength': 1}}
-    v = Validator(schema)
+    v = Validator(login_schema)
 
     req_json = request.get_json()
 
@@ -104,11 +96,6 @@ def protected():
     return jsonify(logged_in_as=current_user), 200
 
 
-@app.route("/api/short")
-def short():
-    return "short!"
-
-
 @app.route('/api/logout')
 @jwt_required()
 def logout():
@@ -137,11 +124,7 @@ def placeholder_img(size):
 @app.route('/admin/goods/register', methods=["POST"])
 @admin_required()
 def admin_goods_register():
-    schema = {'goods_name': {'type': 'string', 'minlength': 1, 'required': True},
-              'price': {'type': 'number', 'minlength': 3, 'required': True},
-              'goods_cnt': {'type': 'number', 'minlength': 1, 'required': True},
-              'goods_description': {'type': 'string', 'minlength': 1, 'required': True}}
-    v = Validator(schema)
+    v = Validator(goods_schema)
 
     if not v.validate(request.get_json()):
         return jsonify(success=False), 400
@@ -195,11 +178,7 @@ def admin_goods_img_upload(goods_code):
 @app.route('/admin/goods/<goods_code>/modify', methods=["PUT"])
 @admin_required()
 def admin_goods_modify(goods_code):
-    schema = {'goods_name': {'type': 'string', 'minlength': 1, 'required': True},
-              'price': {'type': 'number', 'minlength': 3, 'required': True},
-              'goods_cnt': {'type': 'number', 'minlength': 1, 'required': True},
-              'goods_description': {'type': 'string', 'minlength': 1, 'required': True}}
-    v = Validator(schema)
+    v = Validator(goods_schema)
 
     if not v.validate(request.get_json()):
         return jsonify(success=False), 400
@@ -290,6 +269,7 @@ def admin_goods_view(goods_code):
         'created_date': row.created_date.strftime("%Y%m%d %H:%M")
     })
 
+
 @app.route("/carts")
 @jwt_required()
 def carts():
@@ -316,6 +296,11 @@ def carts():
 def carts_add():
     req_json = request.get_json()
 
+    v = Validator(cart_add_schema)
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
     try:
         db.session.execute(
             db.select(Goods).filter(Goods.goods_code == req_json.get('goods_code'))
@@ -337,20 +322,22 @@ def carts_add():
 @app.route("/carts/<goods_code>", methods=["PUT"])
 @jwt_required()
 def carts_modify(goods_code):
+    req_json = request.get_json()
+
+    v = Validator(cart_modify_schema)
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
     cart_goods = db.session.execute(
         db.select(Basket).filter(Basket.goods == goods_code,
                                  Basket.username == get_jwt_identity())
     ).scalar_one_or_none()
 
-    new_cart_goods_cnt = request.get_json().get('goods_cnt')
-
     if not cart_goods:
         return jsonify(success=False), 404
 
-    if new_cart_goods_cnt < 0:
-        return jsonify(success=False), 400
-
-    cart_goods.goods_cnt = new_cart_goods_cnt
+    cart_goods.goods_cnt = req_json.get('goods_cnt')
     db.session.add(cart_goods)
     db.session.commit()
 
@@ -372,3 +359,15 @@ def carts_delete(goods_code):
     db.session.commit()
 
     return jsonify(success=True)
+
+
+@app.route("/myinfo")
+@jwt_required()
+def myinfo_get():
+    return jsonify(success=False), 500
+
+
+@app.route("/myinfo", methods=["PUT"])
+@jwt_required()
+def myinfo_modify():
+    return jsonify(success=False), 500

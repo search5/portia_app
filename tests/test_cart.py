@@ -14,21 +14,7 @@ def cleanup_carts(client):
         db.session.commit()
 
 
-def login_auth(client):
-    res = client.patch('/api/login', json={
-        'username': 'jiho',
-        'password': 'jiho'
-    })
-    assert res.status_code == 200, res.text
-
-    authorization = f"Bearer {res.get_json()['access_token']}"
-
-    return "Authorization", authorization
-
-
-def test_cart_listing_success(client, cleanup_carts):
-    authorization = login_auth(client)
-
+def test_cart_listing_success(client, cleanup_carts, authorization):
     res = client.get('/carts', headers=[authorization])
     assert res.status_code == 200, res.get_json()
 
@@ -39,9 +25,7 @@ def test_cart_listing_failure(client):
     assert res.status_code == 401, res.status_code
 
 
-def test_cart_add_success(client):
-    authorization = login_auth(client)
-
+def test_cart_add_success(client, authorization):
     for i in range(3):
         res = client.post("/carts", json={
             "goods_code": f"TS{i}",
@@ -50,9 +34,7 @@ def test_cart_add_success(client):
         assert res.status_code == 200, res.get_json()
 
 
-def test_cart_add_failure(client):
-    authorization = login_auth(client)
-
+def test_cart_add_failure_notfound_goods(client, authorization):
     res = client.post("/carts", json={
         "goods_code": "TS1000",
         "goods_cnt": 1
@@ -60,9 +42,15 @@ def test_cart_add_failure(client):
     assert res.status_code == 400, res.get_json()
 
 
-def test_cart_modify_success(client):
-    authorization = login_auth(client)
+def test_cart_add_failure_badinfo(client, authorization):
+    res = client.post("/carts", json={
+        "goods_code": "T",
+        "goods_cnt": 0
+    }, headers=[authorization])
+    assert res.status_code == 400, res.get_json()
 
+
+def test_cart_modify_success(client, authorization):
     res = client.put("/carts/TS2", json={
         "goods_cnt": 3
     }, headers=[authorization])
@@ -70,9 +58,7 @@ def test_cart_modify_success(client):
     assert res.status_code == 200, res.get_json()
 
 
-def test_cart_modify_failure(client):
-    authorization = login_auth(client)
-
+def test_cart_modify_failure(client, authorization):
     res = client.put("/carts/TS10", json={
         "goods_cnt": 3
     }, headers=[authorization])
@@ -86,17 +72,13 @@ def test_cart_modify_failure(client):
     assert res.status_code == 400, res.get_json()
 
 
-def test_cart_delete_success(client):
-    authorization = login_auth(client)
-
+def test_cart_delete_success(client, authorization):
     res = client.delete("/carts/TS2", json={}, headers=[authorization])
 
     assert res.status_code == 200, res.get_json()
 
 
-def test_cart_delete_failure(client):
-    authorization = login_auth(client)
-
+def test_cart_delete_failure(client, authorization):
     res = client.delete("/carts/TS100", json={}, headers=[authorization])
 
     assert res.status_code == 404, res.get_json()

@@ -46,6 +46,12 @@ class Orders(db.Model, JSONMixin):
     order_str_id = db.Column(db.String(100))
     username = db.Column(db.String(200), db.ForeignKey('user.username'))
     order_date = db.Column(db.DateTime)
+    ship_to_name = db.Column(db.String(20))
+    ship_to_phone = db.Column(db.String(14))
+    ship_to_addresses =db.Column(db.String(150))
+    ship_to_postcode = db.Column(db.String(5))
+    order_status = db.Column(db.String(4), doc='결제 상태')
+    order_items = db.relationship("OrdersItem")
 
 
 class OrdersItem(db.Model, JSONMixin):

@@ -19,15 +19,6 @@ def cleanup_goods(client):
         db.session.commit()
 
 
-@pytest.fixture()
-def admin_authorization(client):
-    res = client.patch('/api/login', json={
-        'username': 'jiho',
-        'password': 'jiho'
-    })
-    return f"Bearer {res.get_json()['access_token']}"
-
-
 def test_admin_goods_register_success(client, cleanup_goods, admin_authorization):
     # 상품 등록 기능
     res = client.post("/admin/goods/register", json={
@@ -35,13 +26,13 @@ def test_admin_goods_register_success(client, cleanup_goods, admin_authorization
         'price': 30000,
         'goods_cnt': 1,
         'goods_description': '상품 등록 테스트'
-    }, headers=[("Authorization", admin_authorization)])
+    }, headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
 
 def test_admin_goods_register_notsend_failure(client, admin_authorization):
     # 상품 등록 실패(아무것도 안 보냄)
-    res = client.post("/admin/goods/register", json={}, headers=[("Authorization", admin_authorization)])
+    res = client.post("/admin/goods/register", json={}, headers=[admin_authorization])
     assert res.status_code == 400, res.status_code
 
 
@@ -52,7 +43,7 @@ def test_admin_goods_register_failure(client, admin_authorization):
         'price': 0,
         'goods_cnt': 0,
         'goods_description': ''
-    }, headers=[("Authorization", admin_authorization)])
+    }, headers=[admin_authorization])
     assert res.status_code == 400, res.status_code
 
 
@@ -63,26 +54,26 @@ def test_admin_goods_image_upload(client, admin_authorization):
     post_data = {'goods_photo': (io.BytesIO(open(sample_file_name, "rb").read()), sample_file_name)}
 
     res = client.post(f'/admin/goods/{goods_code}/upload', data=post_data,
-                      headers=[("Authorization", admin_authorization)])
+                      headers=[admin_authorization])
 
     assert res.status_code == 200, res.text
 
 
 def test_admin_goods_image_upload_failure_not_allowed_file(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={'goods_photo': (io.BytesIO(b""), "image.php")},
-                      headers=[("Authorization", admin_authorization)])
+                      headers=[admin_authorization])
     assert res.status_code == 400
 
 
 def test_admin_goods_image_upload_failure_not_upload(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={},
-                      headers=[("Authorization", admin_authorization)])
+                      headers=[admin_authorization])
     assert res.status_code == 400
 
 
 def test_admin_goods_image_upload_failure_bad_code(client, admin_authorization):
     res = client.post(f'/admin/goods/abcde/upload', data={'goods_photo': (io.BytesIO(b""), "image.jpg")},
-                      headers=[("Authorization", admin_authorization)])
+                      headers=[admin_authorization])
     assert res.status_code == 400
 
 
@@ -92,7 +83,7 @@ def goods_register(client, admin_authorization):
         'price': 30000,
         'goods_cnt': 1,
         'goods_description': '상품 2번 등록 테스트'
-    }, headers=[("Authorization", admin_authorization)])
+    }, headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
     return res.get_json().get('goods_code')
@@ -107,7 +98,7 @@ def test_admin_goods_modify_success(client, admin_authorization):
         'price': 50000,
         'goods_cnt': 2,
         'goods_description': '상품 2번 수정 테스트'
-    }, headers=[("Authorization", admin_authorization)])
+    }, headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
 
@@ -118,13 +109,13 @@ def test_admin_goods_modify_failure_invalid_goods(client, admin_authorization):
         'price': 50000,
         'goods_cnt': 2,
         'goods_description': '상품 2번 수정 테스트'
-    }, headers=[("Authorization", admin_authorization)])
+    }, headers=[admin_authorization])
     assert res.status_code == 404, res.status_code
 
 
 def test_admin_goods_modify_failure_invalid_data(client, admin_authorization):
     # 상품 수정 기능(잘못된 데이터 전송)
-    res = client.put("/admin/goods/1/modify", json={}, headers=[("Authorization", admin_authorization)])
+    res = client.put("/admin/goods/1/modify", json={}, headers=[admin_authorization])
     assert res.status_code == 400, res.status_code
 
 
@@ -133,31 +124,31 @@ def test_admin_goods_delete_success(client, admin_authorization):
     goods_code = goods_register(client, admin_authorization)
 
     res = client.delete(f"/admin/goods/{goods_code}/delete",
-                        headers=[("Authorization", admin_authorization)])
+                        headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
 
 def test_admin_goods_delete_failure(client, admin_authorization):
     # 상품 삭제 기능
-    res = client.delete("/admin/goods/1/delete", json={}, headers=[("Authorization", admin_authorization)])
+    res = client.delete("/admin/goods/1/delete", json={}, headers=[admin_authorization])
     assert res.status_code == 404, res.status_code
 
 
 def test_admin_goods_list_success(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
-    res = client.get("/admin/goods", headers=[("Authorization", admin_authorization)])
+    res = client.get("/admin/goods", headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
 
 def test_admin_goods_list_failure(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
-    res = client.get("/admin/goods?page=alpha", headers=[("Authorization", admin_authorization)])
+    res = client.get("/admin/goods?page=alpha", headers=[admin_authorization])
     assert res.status_code == 400, res.text
 
 
 def test_admin_goods_list_success_query_str(client, admin_authorization):
     # 등록된 상품 목록 반환 기능
-    res = client.get("/admin/goods?query=alpha", headers=[("Authorization", admin_authorization)])
+    res = client.get("/admin/goods?query=alpha", headers=[admin_authorization])
     assert res.status_code == 200, res.text
 
 
@@ -165,11 +156,11 @@ def test_admin_goods_get_success(client, admin_authorization):
     # 등록된 상품의 상세 정보 가져오기
     goods_code = goods_register(client, admin_authorization)
 
-    res = client.get(f"/admin/goods/{goods_code}", headers=[("Authorization", admin_authorization)])
+    res = client.get(f"/admin/goods/{goods_code}", headers=[admin_authorization])
     assert res.status_code == 200, res.status_code
 
 
 def test_admin_goods_get_failure_bad_code(client, admin_authorization):
     # 등록된 상품의 상세 정보 가져오기
-    res = client.get("/admin/goods/alpha", headers=[("Authorization", admin_authorization)])
+    res = client.get("/admin/goods/alpha", headers=[admin_authorization])
     assert res.status_code == 404, res.status_code

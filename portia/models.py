@@ -43,7 +43,7 @@ class Goods(db.Model, JSONMixin):
 
 class Orders(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
-    order_str_id = db.Column(db.String(100))
+    order_str_id = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(200), db.ForeignKey('user.username'))
     order_date = db.Column(db.DateTime)
     ship_to_name = db.Column(db.String(20))
@@ -56,6 +56,7 @@ class Orders(db.Model, JSONMixin):
 
 class OrdersItem(db.Model, JSONMixin):
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
+    order_str_id = db.Column(db.String(100), db.ForeignKey('orders.order_str_id'))
     goods = db.Column(db.String(255), db.ForeignKey('goods.goods_code'))
     goods_price = db.Column(db.Integer)
     goods_cnt = db.Column(db.Integer)

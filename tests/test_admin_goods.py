@@ -164,3 +164,7 @@ def test_admin_goods_get_failure_bad_code(client, admin_authorization):
     # 등록된 상품의 상세 정보 가져오기
     res = client.get("/admin/goods/alpha", headers=[admin_authorization])
     assert res.status_code == 404, res.status_code
+
+
+def test_admin_goods_image_success(client, admin_authorization):
+    assert 500 == 200, 'Not Implemented'

@@ -19,20 +19,28 @@ def test_myinfo_modify_failure_badinfo(client, authorization):
 
 
 def test_recently_orders_success(client, authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get('/myinfo/order-latest', headers=[authorization])
+    assert res.status_code == 200, res.get_json()
 
 
 def test_all_orders_success(client, authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get('/myinfo/orders', headers=[authorization])
+    assert res.status_code == 200, res.get_json()
 
 
 def test_all_orders_failure(client, authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get('/myinfo/orders?page=alpha', headers=[authorization])
+    assert res.status_code == 400, res.get_json()
 
 
 def test_order_detail_success(client, authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get('/myinfo/orders/TS10', headers=[authorization])
+    assert res.status_code == 200, res.get_json()
 
 
 def test_order_detail_failure(client, authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get('/myinfo/orders/TS10')
+    assert res.status_code == 401, res.get_json()
+
+    res = client.get('/myinfo/orders/TS11', headers=[authorization])
+    assert res.status_code == 400, res.get_json()

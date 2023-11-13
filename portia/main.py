@@ -1,9 +1,10 @@
+import mimetypes
 import os
 import uuid
 from pathlib import Path
 
 import bcrypt
-from flask import redirect, request, jsonify, render_template
+from flask import redirect, request, jsonify, render_template, send_file, url_for
 from flask_jwt_extended import (jwt_required, get_jwt, create_access_token,
                                 get_jwt_identity, create_refresh_token)
 from sqlalchemy import func, or_
@@ -16,6 +17,7 @@ from portia.utils.validator_utils import Validator
 from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
+mimetypes.init()
 
 
 @app.route("/api/users/join", methods=["POST"])
@@ -264,10 +266,19 @@ def admin_goods_view(goods_code):
         'goods_name': row.goods_name,
         'price': row.price,
         'goods_photo': row.goods_photo,
+        'goods_photo_url': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
         'goods_cnt': row.goods_cnt,
         'goods_description': row.goods_description,
         'created_date': row.created_date.strftime("%Y%m%d %H:%M")
     })
+
+
+@app.route("/admin/goods/<goods_code>/img/<img_path>")
+@admin_required()
+def admin_goods_img_view(goods_code, img_path):
+    mime, _ = mimetypes.guess_type(img_path)
+
+    return send_file(os.path.join(app.config.get("UPLOAD_FOLDER"), img_path), mimetype=mime)
 
 
 @app.route("/carts")

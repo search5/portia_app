@@ -1,3 +1,5 @@
+import uuid
+
 import bcrypt
 import click
 import nodeenv
@@ -106,10 +108,16 @@ def goods_dummy():
 
     app = create_app()
     with app.app_context():
+        original_file = Path("sample/savethechildren_202311.jpg")
+
         for i in range(10):
+            save_filename = Path(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4()}.jpg')
+            shutil.copyfile(original_file, save_filename)
+
             product_record = Goods()
             product_record.goods_code = f'TS{i}'
             product_record.goods_name = '상품 2'
+            product_record.goods_photo = str(save_filename.name)
             product_record.price = 30000
             product_record.goods_cnt = 30
             product_record.goods_description = '상품 2번 등록 테스트'
@@ -117,67 +125,6 @@ def goods_dummy():
             db.session.add(product_record)
 
             db.session.commit()
-
-
-@cli.command()
-@click.argument('filename')
-def product_register(filename):
-    from portia.models import db
-
-    app = create_app()
-    with app.app_context():
-        success, data = get_yaml(filename)
-
-        if not success:
-            return
-
-        # 이미 등록되어 있는 상품인지 확인
-        product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
-        if product_record:
-            click.echo('등록된 제품은 다시 등록할 수 없습니다')
-            return
-
-        product_record = Goods()
-
-        for key, val in data.items():
-            setattr(product_record, key, val)
-
-        db.session.add(product_record)
-
-        db.session.commit()
-
-        click.echo(product_record.id)
-
-
-@cli.command()
-@click.argument('filename')
-def product_edit(filename):
-    from portia.models import db
-
-    app = create_app()
-    with app.app_context():
-        success, data = get_yaml(filename)
-
-        if not success:
-            return
-        # 제품 정보 업데이트 시 상품 수량은 업데이트하지 않도록 한다.
-        if 'goods_cnt' in data:
-            del data['goods_cnt']
-
-        # 이미 등록되어 있는 상품인지 확인
-        product_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == data['goods_code'])).first()
-        if not product_record:
-            click.echo('등록되지 않은 제품은 수정할 수 없습니다')
-            return
-
-        for key, val in data.items():
-            setattr(product_record, key, val)
-
-        # db.session.add(product_record)
-
-        db.session.commit()
-
-        click.echo(product_record.id)
 
 
 if __name__ == "__main__":

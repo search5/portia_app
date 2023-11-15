@@ -13,6 +13,7 @@ from sqlalchemy.exc import NoResultFound
 from portia.factory import create_app
 from portia.models import db, User, DeliveryAddresses, Goods, Basket
 from portia.utils.jwt_utils import admin_required
+from portia.utils.placeholder import placeholder_img
 from portia.utils.validator_utils import Validator
 from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema
 
@@ -108,19 +109,8 @@ def logout():
 
 # placeholder route
 # write date: 2023-08-28 19:56
-@app.route('/api/placeholder', defaults={'size': '300x200'})
-@app.route('/api/placeholder/<size>')
-def placeholder_img(size):
-    if ('x' not in size) or (size.count('x') != 1):
-        return "Bad Request", 400
-    width, height = size.split("x")
-    bg_fill = '#cccccc'
-    txt_fill = '#9c9c9c'
-    txt = size
-
-    return (render_template('placeholder.jinja2', width=width, height=height,
-                            bg_fill=bg_fill, txt_fill=txt_fill, txt=txt),
-            (('Content-Type', 'image/svg+xml'),))
+app.add_url_rule('/api/placeholder', defaults={'size': '300x200'}, view_func=placeholder_img)
+app.add_url_rule('/api/placeholder/<size>', view_func=placeholder_img)
 
 
 @app.route('/admin/goods/register', methods=["POST"])
@@ -278,7 +268,11 @@ def admin_goods_view(goods_code):
 def admin_goods_img_view(goods_code, img_path):
     mime, _ = mimetypes.guess_type(img_path)
 
-    return send_file(os.path.join(app.config.get("UPLOAD_FOLDER"), img_path), mimetype=mime)
+    serving_img_path = os.path.join(app.config.get("UPLOAD_FOLDER"), img_path)
+    if os.path.exists(serving_img_path):
+        return send_file(serving_img_path, mimetype=mime)
+    else:
+        return placeholder_img('500x500')
 
 
 @app.route("/carts")

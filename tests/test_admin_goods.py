@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 
 import pytest
 
@@ -14,6 +15,10 @@ def cleanup_goods(client):
         for row in r:
             if row.goods_code.startswith("TS"):
                 continue
+            if row.goods_photo:
+                with Path(row.goods_photo) as img:
+                    if img.exists():
+                        img.unlink()
             db.session.delete(row)
 
         db.session.commit()
@@ -167,4 +172,10 @@ def test_admin_goods_get_failure_bad_code(client, admin_authorization):
 
 
 def test_admin_goods_image_success(client, admin_authorization):
-    assert 500 == 200, 'Not Implemented'
+    res = client.get("/admin/goods/TS0/img/3f116911-afed-4455-8987-bb7ab17b21e7.jpg", headers=[admin_authorization])
+    assert res.status_code == 200, res.text
+
+
+def test_admin_goods_image_failure(client, admin_authorization):
+    res = client.get("/admin/goods/TS0/img/alpha.jpg", headers=[admin_authorization])
+    assert res.status_code == 200, res.text

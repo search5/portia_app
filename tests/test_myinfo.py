@@ -9,13 +9,21 @@ def test_myinfo_get_failure(client):
 
 
 def test_myinfo_modify_success(client, authorization):
-    res = client.put('/myinfo', json={}, headers=[authorization])
+    res = client.put('/myinfo', json={
+        "name": "홍길동",
+        "password": "jiho1",
+        "email": "gdhong@gmail.com"
+    }, headers=[authorization])
     assert res.status_code == 200, res.get_json()
 
 
 def test_myinfo_modify_failure_badinfo(client, authorization):
-    res = client.put('/myinfo', json={}, headers=[authorization])
-    assert res.status_code == 200, res.get_json()
+    res = client.put('/myinfo', json={
+        "name": "",
+        "password": "",
+        "email": ""
+    }, headers=[authorization])
+    assert res.status_code == 400, res.get_json()
 
 
 def test_recently_orders_success(client, authorization):

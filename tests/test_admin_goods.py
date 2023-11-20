@@ -16,9 +16,9 @@ def cleanup_goods(client):
             if row.goods_code.startswith("TS"):
                 continue
             if row.goods_photo:
-                with Path(row.goods_photo) as img:
-                    if img.exists():
-                        img.unlink()
+                img = Path(row.goods_photo)
+                if img.exists():
+                    img.unlink()
             db.session.delete(row)
 
         db.session.commit()

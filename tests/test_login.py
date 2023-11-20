@@ -3,8 +3,8 @@ import time
 
 def test_login_success(client):
     res = client.patch('/api/login', json={
-        'username': 'jiho',
-        'password': 'jiho'
+        'username': 'admin@portia.shop',
+        'password': 'admin'
     })
     assert res.status_code == 200, res.text
 
@@ -19,7 +19,7 @@ def test_login_failure_badname(client):
 
 def test_login_failure_badpassword(client):
     res = client.patch('/api/login', json={
-        'username': 'jiho',
+        'username': 'admin@portia.shop',
         'password': 'jihos'
     })
     assert res.status_code == 401, res.text
@@ -40,8 +40,8 @@ def test_login_not_sendinfo2(client):
 
 def test_logout(client):
     res = client.patch('/api/login', json={
-        'username': 'jiho',
-        'password': 'jiho'
+        'username': 'admin@portia.shop',
+        'password': 'admin'
     })
     assert res.status_code == 200, res.text
 
@@ -54,8 +54,8 @@ def test_logout(client):
 
 def test_auth_request(client):
     res = client.patch('/api/login', json={
-        'username': 'jiho',
-        'password': 'jiho'
+        'username': 'admin@portia.shop',
+        'password': 'admin'
     })
     assert res.status_code == 200, res.text
 

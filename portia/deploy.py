@@ -1,3 +1,4 @@
+import typing
 import uuid
 
 import bcrypt
@@ -79,14 +80,22 @@ def init_db():
 def init_user():
     """Initialize User"""
     from portia.models import db
-    encrypt_password = bcrypt.hashpw('jiho'.encode('utf-8'), bcrypt.gensalt())
+    users_data = [
+        {"username": 'admin@portia.shop', "password": "admin", "is_admin": "Y",
+         "name": "관리자", "email": "admin@portia.shop"},
+        {"username": 'user@portia.shop', "password": "user", "is_admin": "N",
+         "name": "사용자", "email": "user@portia.shop"},
+        {"username": 'gdhong@portia.shop', "password": "gdhong", "is_admin": "N",
+         "name": "홍길동", "email": "gdhong@portia.shop"}
+    ]
 
     app = create_app()
     with app.app_context():
-        user = User(username='jiho', password=encrypt_password.decode('utf-8'), is_admin='Y',
-                    join_date=db.func.now(), name='이지호',
-                    email='search5@gmail.com')
-        db.session.add(user)
+        for data in users_data:
+            enc_password = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
+            data["password"] = enc_password.decode('utf-8')
+            data["join_date"] = db.func.now()
+            db.session.add(User(**data))
         db.session.commit()
 
 

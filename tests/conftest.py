@@ -11,7 +11,7 @@ def client():
 @pytest.fixture()
 def admin_authorization(client):
     res = client.patch('/api/login', json={
-        'username': 'admin@portia.kr',
+        'username': 'admin@portia.shop',
         'password': 'admin'
     })
     assert res.status_code == 200, res.text
@@ -24,7 +24,7 @@ def admin_authorization(client):
 @pytest.fixture()
 def authorization(client):
     res = client.patch('/api/login', json={
-        'username': 'user@portia.kr',
+        'username': 'user@portia.shop',
         'password': 'user'
     })
     assert res.status_code == 200, res.text
@@ -37,7 +37,7 @@ def authorization(client):
 @pytest.fixture()
 def second_authorization(client):
     res = client.patch('/api/login', json={
-        'username': 'gdhong@portia.kr',
+        'username': 'gdhong@portia.shop',
         'password': 'gdhong'
     })
     assert res.status_code == 200, res.text

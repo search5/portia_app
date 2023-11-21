@@ -10,9 +10,14 @@ def test_myinfo_get_failure(client):
 
 def test_myinfo_modify_success(client, second_authorization):
     res = client.put('/myinfo', json={
-        "name": "홍길동",
-        "password": "jiho1",
-        "email": "gdhong@gmail.com"
+        "real_name": "홍길동",
+        "real_email": "gdhong@portia.shop",
+        "user_current_password": "gdhong",
+        "user_new_password": "gdhong",
+        "user_new_password_confirm": "gdhong",
+        "post_code": "10346",
+        "addresses": "서울특별시 강서구 염창동",
+        "detail_address": "821-40"
     }, headers=[second_authorization])
     assert res.status_code == 200, res.get_json()
 
@@ -27,7 +32,7 @@ def test_myinfo_modify_failure_badinfo(client, second_authorization):
 
 
 def test_recently_orders_success(client, authorization):
-    res = client.get('/myinfo/order-latest', headers=[authorization])
+    res = client.get('/myinfo/orders/latest', headers=[authorization])
     assert res.status_code == 200, res.get_json()
 
 

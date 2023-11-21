@@ -27,7 +27,7 @@ class DeliveryAddresses(db.Model, JSONMixin):
     address1 = db.Column(db.String(255))
     address2 = db.Column(db.String(255))
     created_date = db.Column(db.DateTime)
-    user = db.relationship("User")
+    user = db.relationship("User", backref="addresses")
 
 
 class Goods(db.Model, JSONMixin):

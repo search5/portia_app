@@ -15,7 +15,8 @@ from portia.models import db, User, DeliveryAddresses, Goods, Basket
 from portia.utils.jwt_utils import admin_required
 from portia.utils.placeholder import placeholder_img
 from portia.utils.validator_utils import Validator
-from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema
+from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema, \
+    user_modify_schema
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 mimetypes.init()
@@ -369,10 +370,82 @@ def carts_delete(goods_code):
 @app.route("/myinfo")
 @jwt_required()
 def myinfo_get():
-    return jsonify(success=False), 500
+    current_user = get_jwt_identity()
+
+    record = db.session.execute(db.select(User).filter(User.username == current_user)).scalar_one()
+    user_delivery_addresses = record.addresses[0] if record.addresses else dict()
+
+    user_data = dict(
+        real_name=record.name,
+        real_email=record.email,
+        post_code=user_delivery_addresses.get('postcode', ''),
+        addresses=user_delivery_addresses.get('address1', ''),
+        detail_address=user_delivery_addresses.get('address2', '')
+    )
+
+    return jsonify(success=True, **user_data)
 
 
 @app.route("/myinfo", methods=["PUT"])
 @jwt_required()
 def myinfo_modify():
+    current_user = get_jwt_identity()
+
+    req_json = request.get_json()
+
+    v = Validator(user_modify_schema)
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
+    user_record = db.session.execute(db.select(User).filter(User.username == current_user)).scalar_one()
+    user_delivery_addresses = db.session.execute(
+        db.select(DeliveryAddresses).filter(DeliveryAddresses.username == current_user)).scalar_one_or_none()
+    if not user_delivery_addresses:
+        user_delivery_addresses = DeliveryAddresses()
+        user_delivery_addresses.username = current_user
+        user_delivery_addresses.created_date = db.func.now()
+
+    user_record.name = req_json.get('real_name')
+    user_record.email = req_json.get('real_email')
+
+    # check pw
+    current_password = req_json.get('user_current_password').encode('utf-8')
+    new_password = req_json.get('user_current_password').encode('utf-8')
+    new_password_confirm = req_json.get('user_new_password_confirm').encode('utf-8')
+
+    new_password_equal = new_password == new_password_confirm
+
+    # 사용자가 입력한 비밀번호가 저장되어 있는 비밀번호와 일치하는지 확인될 때만 비밀번호 변경을 수행한다.
+    if bcrypt.checkpw(current_password, user_record.password.encode('utf-8')) and new_password_equal:
+        encrypt_password = bcrypt.hashpw(new_password, bcrypt.gensalt())
+        user_record.password = encrypt_password.decode('utf-8')
+
+    user_delivery_addresses.postcode = req_json.get('post_code')
+    user_delivery_addresses.address1 = req_json.get('addresses')
+    user_delivery_addresses.address2 = req_json.get('detail_address')
+
+    db.session.add(user_record)
+    db.session.add(user_delivery_addresses)
+
+    db.session.commit()
+
+    return jsonify(success=True)
+
+
+@app.route("/myinfo/orders")
+@jwt_required()
+def myinfo_orders():
+    return jsonify(success=False), 500
+
+
+@app.route("/myinfo/orders/latest")
+@jwt_required()
+def myinfo_orders_latest():
+    return jsonify(success=False), 500
+
+
+@app.route("/myinfo/orders/<order_id>")
+@jwt_required()
+def myinfo_orders_detail(order_id):
     return jsonify(success=False), 500

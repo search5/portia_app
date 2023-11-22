@@ -11,7 +11,7 @@ from sqlalchemy import func, or_
 from sqlalchemy.exc import NoResultFound
 
 from portia.factory import create_app
-from portia.models import db, User, DeliveryAddresses, Goods, Basket
+from portia.models import db, User, DeliveryAddresses, Goods, Basket, Orders
 from portia.utils.jwt_utils import admin_required
 from portia.utils.placeholder import placeholder_img
 from portia.utils.validator_utils import Validator
@@ -315,7 +315,7 @@ def carts_add():
         return jsonify(success=False), 400
 
     basket = Basket()
-    basket.goods = req_json.get('goods_code')
+    basket.goods_code = req_json.get('goods_code')
     basket.goods_cnt = req_json.get('goods_cnt')
     basket.username = get_jwt_identity()
 
@@ -336,7 +336,7 @@ def carts_modify(goods_code):
         return jsonify(success=False), 400
 
     cart_goods = db.session.execute(
-        db.select(Basket).filter(Basket.goods == goods_code,
+        db.select(Basket).filter(Basket.goods_code == goods_code,
                                  Basket.username == get_jwt_identity())
     ).scalar_one_or_none()
 
@@ -354,7 +354,7 @@ def carts_modify(goods_code):
 @jwt_required()
 def carts_delete(goods_code):
     cart_goods = db.session.execute(
-        db.select(Basket).filter(Basket.goods == goods_code,
+        db.select(Basket).filter(Basket.goods_code == goods_code,
                                  Basket.username == get_jwt_identity())
     ).scalar_one_or_none()
 
@@ -436,16 +436,95 @@ def myinfo_modify():
 @app.route("/myinfo/orders")
 @jwt_required()
 def myinfo_orders():
-    return jsonify(success=False), 500
+    current_user = get_jwt_identity()
+
+    order_records = db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date))
+
+    try:
+        page = db.paginate(order_records, per_page=10)
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 400
+
+    resp = {'items': []}
+    for item in ('first', 'has_next', 'has_prev', 'last', 'next_num', 'page',
+                 'pages', 'per_page', 'prev_num', 'total'):
+        resp[item] = getattr(page, item)
+
+    # Page Results
+    for row in page.items:
+        resp['items'].append({
+            "uuid": row.order_str_id,
+            "title": row.order_summary_title,
+            "img": url_for('goods_img_view', **row.order_representative_image_info),
+            "price": row.order_total_price,
+            "order_date": row.order_date.strftime('%Y-%m-%d')
+        })
+
+    return jsonify(success=True, data=resp)
 
 
 @app.route("/myinfo/orders/latest")
 @jwt_required()
 def myinfo_orders_latest():
-    return jsonify(success=False), 500
+    current_user = get_jwt_identity()
+
+    order_record = db.session.execute(
+        db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date)).limit(1)
+    ).scalar_one_or_none()
+
+    data = {
+        "uuid": order_record.order_str_id,
+        "title": order_record.order_summary_title,
+        "img": url_for('goods_img_view', **order_record.order_representative_image_info),
+        "price": order_record.order_total_price,
+        "order_date": order_record.order_date.strftime('%Y-%m-%d')
+    }
+
+    return jsonify(success=True, data=data)
 
 
 @app.route("/myinfo/orders/<order_id>")
 @jwt_required()
 def myinfo_orders_detail(order_id):
+
+    data = {
+        "order_no": 'ABCD',
+        "order_date": '2023-08-21',
+        "items": [
+            {
+                "goods_name": '상품 1',
+                "goods_cnt": 2,
+                "goods_price": 30000,
+                "goods_total_price": 60000,
+            }, {
+                "goods_name": '상품 2',
+                "goods_cnt": 2,
+                "goods_price": 30000,
+                "goods_total_price": 220000,
+            }
+        ],
+        "orderers": {
+            "name": '홍길동',
+            "phone": '010-1234-5678'
+        },
+        "ship_to": {
+            "name": '홍길동',
+            "phone": '010-1234-5678',
+            "addresses": '경기도 고양시 일산서구 일청로',
+            "post_code": '10236'
+        },
+        "order_status": '결제중' # 결제중 | 결제취소 | 결제완료 | 입금대기 | 입금완료
+    }
+
     return jsonify(success=False), 500
+
+
+@app.route("/goods/<goods_code>/img/<img_path>")
+def goods_img_view(goods_code, img_path):
+    mime, _ = mimetypes.guess_type(img_path)
+
+    serving_img_path = os.path.join(app.config.get("UPLOAD_FOLDER"), img_path)
+    if os.path.exists(serving_img_path):
+        return send_file(serving_img_path, mimetype=mime)
+    else:
+        return placeholder_img('500x500')

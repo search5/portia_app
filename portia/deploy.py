@@ -136,5 +136,39 @@ def goods_dummy():
             db.session.commit()
 
 
+@cli.command()
+def orders_dummy():
+    order_table_columns = ('order_str_id', 'username', 'order_date', 'ship_to_name',
+                           'ship_to_phone', 'ship_to_addresses', 'ship_to_postcode',
+                           'order_status')
+    order_item_table_columns = ('order_str_id', 'goods_code', 'goods_price', 'goods_cnt')
+
+    from portia.models import db, Orders, OrdersItem
+
+    app = create_app()
+    with app.app_context():
+        order_values = (
+            ('7777578724', 'user@portia.shop', db.func.now(), '이지호', '010-2758-7508', '경기도 고양시', '10346', '배송중'),
+            ('4235538724', 'user@portia.shop', db.func.now(), '이지호', '010-2758-7508', '경기도 고양시', '10346', '배송중')
+        )
+
+        order_item_values = (
+            ('4235538724', 'TS0', 300, 1),
+            ('4235538724', 'TS0', 300, 5),
+            ('7777578724', 'TS1', 500, 1),
+            ('7777578724', 'TS5', 800, 5)
+        )
+
+        for item in order_values:
+            record = Orders(**dict(zip(order_table_columns, item)))
+            db.session.add(record)
+
+        for item in order_item_values:
+            record = OrdersItem(**dict(zip(order_item_table_columns, item)))
+            db.session.add(record)
+
+        db.session.commit()
+
+
 if __name__ == "__main__":
     cli()

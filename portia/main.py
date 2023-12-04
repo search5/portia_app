@@ -486,6 +486,11 @@ def myinfo_orders_latest():
 @app.route("/myinfo/orders/<order_id>")
 @jwt_required()
 def myinfo_orders_detail(order_id):
+    order_record = db.session.execute(
+        db.select(Orders).filter(Orders.order_str_id == order_id)).scalar_one_or_none()
+
+    if not order_record:
+        return jsonify(success=False), 404
 
     data = {
         "order_no": 'ABCD',

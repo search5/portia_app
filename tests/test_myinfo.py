@@ -47,11 +47,14 @@ def test_all_orders_failure(client, authorization):
 
 
 def test_order_detail_success(client, authorization):
-    res = client.get('/myinfo/orders/TS10', headers=[authorization])
+    res = client.get('/myinfo/orders/7777578724', headers=[authorization])
     assert res.status_code == 200, res.get_json()
 
 
 def test_order_detail_failure(client, authorization):
+    res = client.get('/myinfo/orders/677278653', headers=[authorization])
+    assert res.status_code == 404, res.get_json()
+
     res = client.get('/myinfo/orders/TS10')
     assert res.status_code == 401, res.get_json()
 

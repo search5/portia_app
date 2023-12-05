@@ -17,6 +17,7 @@ class User(db.Model, JSONMixin):
     name = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
     is_admin = db.Column(db.String(1))
     join_date = db.Column(db.DateTime)
 

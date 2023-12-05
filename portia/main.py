@@ -180,7 +180,7 @@ def admin_goods_modify(goods_code):
 
     goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
     if not goods:
-        return "Not Found", 404
+        return jsonify(success=False), 404
     goods = goods[0]
     goods.goods_name = req_json.get('goods_name')
     goods.price = req_json.get('price', 0)
@@ -198,7 +198,7 @@ def admin_goods_modify(goods_code):
 def admin_goods_delete(goods_code):
     goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
     if not goods:
-        return "Not Found", 404
+        return jsonify(success=False), 404
     db.session.delete(goods[0])
     db.session.commit()
 
@@ -233,7 +233,7 @@ def admin_goods_list():
             'goods_code': row.goods_code,
             'goods_name': row.goods_name,
             'price': row.price,
-            'goods_photo': row.goods_photo,
+            'goods_photo': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
             'goods_cnt': row.goods_cnt,
             'goods_description': row.goods_description,
             'created_date': row.created_date.strftime("%Y%m%d %H:%M")
@@ -248,7 +248,7 @@ def admin_goods_view(goods_code):
     query_res = db.session.execute(
         db.select(Goods).filter(Goods.goods_code == goods_code)).first()
     if not query_res:
-        return "NOT FOUND", 404
+        return jsonify(success=False), 404
     row = query_res[0]
 
     return jsonify({
@@ -486,42 +486,38 @@ def myinfo_orders_latest():
 @app.route("/myinfo/orders/<order_id>")
 @jwt_required()
 def myinfo_orders_detail(order_id):
-    order_record = db.session.execute(
+    order_record:  Orders = db.session.execute(
         db.select(Orders).filter(Orders.order_str_id == order_id)).scalar_one_or_none()
 
     if not order_record:
         return jsonify(success=False), 404
 
     data = {
-        "order_no": 'ABCD',
-        "order_date": '2023-08-21',
+        "order_no": order_record.order_str_id,
+        "order_date": order_record.order_date.strftime('%Y-%m-%d'),
         "items": [
             {
                 "goods_name": '상품 1',
                 "goods_cnt": 2,
                 "goods_price": 30000,
                 "goods_total_price": 60000,
-            }, {
-                "goods_name": '상품 2',
-                "goods_cnt": 2,
-                "goods_price": 30000,
-                "goods_total_price": 220000,
             }
         ],
         "orderers": {
-            "name": '홍길동',
-            "phone": '010-1234-5678'
+            "name": order_record.user.name,
+            "phone": order_record.user.phone
         },
         "ship_to": {
-            "name": '홍길동',
-            "phone": '010-1234-5678',
-            "addresses": '경기도 고양시 일산서구 일청로',
-            "post_code": '10236'
+            "name": order_record.ship_to_name,
+            "phone": order_record.ship_to_phone,
+            "addresses": order_record.ship_to_addresses,
+            "post_code": order_record.ship_to_postcode
         },
-        "order_status": '결제중' # 결제중 | 결제취소 | 결제완료 | 입금대기 | 입금완료
+        "order_status": order_record.order_status
     }
+    # 결제중 | 결제취소 | 결제완료 | 입금대기 | 입금완료
 
-    return jsonify(success=False), 500
+    return jsonify(success=True, data=data), 200
 
 
 @app.route("/goods/<goods_code>/img/<img_path>")
@@ -533,3 +529,58 @@ def goods_img_view(goods_code, img_path):
         return send_file(serving_img_path, mimetype=mime)
     else:
         return placeholder_img('500x500')
+
+
+@app.route("/goods")
+def goods_list():
+    query_str = request.args.get('keyword')
+
+    query = db.select(Goods)
+    if query_str:
+        query = query.filter(or_(Goods.goods_name.ilike(f'%{query_str}%'),
+                                 Goods.goods_description.ilike(f'%{query_str}%')))
+    query = query.order_by(db.desc(Goods.created_date))
+
+    try:
+        page = db.paginate(query, per_page=10)
+    except Exception as e:
+        return jsonify(success=False, message=str(e)), 400
+
+    resp = {'items': []}
+    for item in ('first', 'has_next', 'has_prev', 'last', 'next_num', 'page',
+                 'pages', 'per_page', 'prev_num', 'total'):
+        resp[item] = getattr(page, item)
+
+    # Page Results
+    for row in page.items:
+        resp['items'].append({
+            'goods_code': row.goods_code,
+            'goods_name': row.goods_name,
+            'price': row.price,
+            'goods_photo': url_for('goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
+            'goods_cnt': row.goods_cnt,
+            'goods_description': row.goods_description,
+            'created_date': row.created_date.strftime("%Y%m%d %H:%M")
+        })
+
+    return jsonify(success=True, data=resp)
+
+
+@app.route("/goods/<goods_code>")
+def goods_detail(goods_code):
+    query_res = db.session.execute(
+        db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    if not query_res:
+        return jsonify(success=False), 404
+    row = query_res[0]
+
+    return jsonify({
+        'goods_code': row.goods_code,
+        'goods_name': row.goods_name,
+        'price': row.price,
+        'goods_photo': row.goods_photo,
+        'goods_photo_url': url_for('goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
+        'goods_cnt': row.goods_cnt,
+        'goods_description': row.goods_description,
+        'created_date': row.created_date.strftime("%Y%m%d %H:%M")
+    })

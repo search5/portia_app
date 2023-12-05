@@ -82,11 +82,11 @@ def init_user():
     from portia.models import db
     users_data = [
         {"username": 'admin@portia.shop', "password": "admin", "is_admin": "Y",
-         "name": "관리자", "email": "admin@portia.shop"},
+         "name": "관리자", "email": "admin@portia.shop", "phone": "010-1234-5678"},
         {"username": 'user@portia.shop', "password": "user", "is_admin": "N",
-         "name": "사용자", "email": "user@portia.shop"},
+         "name": "사용자", "email": "user@portia.shop", "phone": "010-1234-5678"},
         {"username": 'gdhong@portia.shop', "password": "gdhong", "is_admin": "N",
-         "name": "홍길동", "email": "gdhong@portia.shop"}
+         "name": "홍길동", "email": "gdhong@portia.shop", "phone": "010-1234-5678"}
     ]
 
     app = create_app()

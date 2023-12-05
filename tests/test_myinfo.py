@@ -17,7 +17,8 @@ def test_myinfo_modify_success(client, second_authorization):
         "user_new_password_confirm": "gdhong",
         "post_code": "10346",
         "addresses": "서울특별시 강서구 염창동",
-        "detail_address": "821-40"
+        "detail_address": "821-40",
+        "phone": "010-1234-5678"
     }, headers=[second_authorization])
     assert res.status_code == 200, res.get_json()
 

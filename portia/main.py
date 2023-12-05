@@ -47,6 +47,7 @@ def user_join():
     new_user.username = new_username
     new_user.email = req_json.get('real_email').strip()
     new_user.name = req_json.get('real_name').strip()
+    new_user.phone = req_json.get('phone').strip()
     new_user.password = encrypt_password.decode('utf-8')
     new_user.is_admin = 'N'
     new_user.join_date = func.now()
@@ -408,6 +409,7 @@ def myinfo_modify():
 
     user_record.name = req_json.get('real_name')
     user_record.email = req_json.get('real_email')
+    user_record.phone = req_json.get('phone')
 
     # check pw
     current_password = req_json.get('user_current_password').encode('utf-8')

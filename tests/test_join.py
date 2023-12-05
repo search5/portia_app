@@ -8,11 +8,11 @@ def cleanup_login():
 
     # success data clean
     with app.app_context():
-        r = db.session.query(DeliveryAddresses).filter(DeliveryAddresses.username == 'search5@gmail.com').first()
+        r = db.session.query(DeliveryAddresses).filter(DeliveryAddresses.username == 'gdhong@gmail.com').first()
         if r:
             db.session.delete(r)
 
-        r = db.session.query(User).filter(User.username == 'search5@gmail.com').first()
+        r = db.session.query(User).filter(User.username == 'gdhong@gmail.com').first()
         if r:
             db.session.delete(r)
 
@@ -22,25 +22,27 @@ def cleanup_login():
 def test_join_success(client, cleanup_login):
     # cleanup_success
     res = client.post("/api/users/join", json={
-        'real_name': '이지호',
-        'real_email': 'search5@gmail.com',
-        'user_password': 'dmsthfl',
+        'real_name': 'gil-dong',
+        'real_email': 'gdhong@gmail.com',
+        'user_password': 'iiii',
         'post_code': '10346',
-        'addresses': '경기도 고양시 일산서구',
-        'detail_address': '일청로 91번길'
+        'addresses': '경기도 양청시 일산북구',
+        'detail_address': '일백로 42번길',
+        'phone': '010-1234-5678'
     })
     assert res.status_code == 200, res.text
 
 
 def test_join_failure_duplicate(client, cleanup_login):
     # cleanup_success
-    send_data={
-        'real_name': '이지호',
-        'real_email': 'search5@gmail.com',
-        'user_password': 'dmsthfl',
+    send_data = {
+        'real_name': 'gil-dong',
+        'real_email': 'gdhong@gmail.com',
+        'user_password': 'iiii',
         'post_code': '10346',
-        'addresses': '경기도 고양시 일산서구',
-        'detail_address': '일청로 91번길'
+        'addresses': '경기도 양청시 일산북구',
+        'detail_address': '일백로 42번길',
+        'phone': '010-1234-5678'
     }
 
     res = client.post("/api/users/join", json=send_data)
@@ -57,6 +59,7 @@ def test_join_failed_validate(client):
         'user_password': 'dmsthfl',
         'post_code': '10346',
         'addresses': '경기도 고양시 일산서구',
-        'detail_address': '일청로 91번길'
+        'detail_address': '일청로 91번길',
+        'phone': '010-1234-5678'
     })
     assert res.status_code == 400, res.text

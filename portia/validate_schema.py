@@ -3,6 +3,7 @@ user_join_schema = {'real_name': {'type': 'string', 'minlength': 1},
                                    'regex': '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'},
                     'user_password': {'type': 'string', 'minlength': 4},
                     'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
+                    'phone': {'type': 'string', 'minlength': 11, 'maxlength': 13},
                     'addresses': {'type': 'string', 'minlength': 5},
                     'detail_address': {'type': 'string', 'minlength': 5}}
 
@@ -26,6 +27,7 @@ user_modify_schema = {'real_name': {'type': 'string', 'minlength': 2, 'required'
                       'user_new_password': {'type': 'string', 'minlength': 4},
                       'user_new_password_confirm': {'type': 'string', 'minlength': 4},
                       'post_code': {'type': 'string', 'minlength': 5, 'maxlength': 5},
+                      'phone': {'type': 'string', 'minlength': 11, 'maxlength': 13},
                       'addresses': {'type': 'string', 'minlength': 5},
                       'detail_address': {'type': 'string', 'minlength': 5}
                       }

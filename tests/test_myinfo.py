@@ -58,4 +58,3 @@ def test_order_detail_failure(client, authorization):
 
     res = client.get('/myinfo/orders/TS10')
     assert res.status_code == 401, res.get_json()
-

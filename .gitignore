@@ -33,3 +33,6 @@ coverage
 *.sln
 *.sw?
 ssl_keys
+sample
+goods
+.coverage

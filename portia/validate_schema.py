@@ -41,18 +41,10 @@ order_schema = {
             'type': 'dict',
             'required': True,
             'schema': {
-                'goods_name': {'type': 'string', 'minlength': 3, 'required': True},
+                'goods_code': {'type': 'string', 'minlength': 3, 'required': True},
                 'goods_cnt': {'type': 'number', 'min': 1, 'required': True},
                 'goods_price': {'type': 'number', 'min': 100, 'required': True}
             }
-        }
-    },
-    'orderers': {
-        'type': 'dict',
-        'required': True,
-        'schema': {
-            'name': {'type': 'string', 'minlength': 2, 'required': True},
-            'phone': {'type': 'string', 'minlength': 9, 'required': True}
         }
     },
     'ship_to': {

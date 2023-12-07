@@ -11,12 +11,14 @@ from sqlalchemy import func, or_
 from sqlalchemy.exc import NoResultFound
 
 from portia.factory import create_app
-from portia.models import db, User, DeliveryAddresses, Goods, Basket, Orders
+from portia.models import db, User, DeliveryAddresses, Goods, Basket, Orders, \
+    OrdersItem
 from portia.utils.jwt_utils import admin_required
 from portia.utils.placeholder import placeholder_img
 from portia.utils.validator_utils import Validator
-from portia.validate_schema import user_join_schema, login_schema, goods_schema, cart_add_schema, cart_modify_schema, \
-    user_modify_schema
+from portia.validate_schema import user_join_schema, login_schema, goods_schema, \
+    cart_add_schema, cart_modify_schema, \
+    user_modify_schema, order_schema
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
 mimetypes.init()
@@ -115,7 +117,7 @@ app.add_url_rule('/api/placeholder', defaults={'size': '300x200'}, view_func=pla
 app.add_url_rule('/api/placeholder/<size>', view_func=placeholder_img)
 
 
-@app.route('/admin/goods/register', methods=["POST"])
+@app.route('/api/admin/goods/register', methods=["POST"])
 @admin_required()
 def admin_goods_register():
     v = Validator(goods_schema)
@@ -139,7 +141,7 @@ def admin_goods_register():
     return jsonify(success=True, goods_code=goods.goods_code)
 
 
-@app.route('/admin/goods/<goods_code>/upload', methods=["POST"])
+@app.route('/api/admin/goods/<goods_code>/upload', methods=["POST"])
 @admin_required()
 def admin_goods_img_upload(goods_code):
     if 'goods_photo' not in request.files:
@@ -169,7 +171,7 @@ def admin_goods_img_upload(goods_code):
         return jsonify(success=False, message=str(e)), 400
 
 
-@app.route('/admin/goods/<goods_code>/modify', methods=["PUT"])
+@app.route('/api/admin/goods/<goods_code>/modify', methods=["PUT"])
 @admin_required()
 def admin_goods_modify(goods_code):
     v = Validator(goods_schema)
@@ -194,7 +196,7 @@ def admin_goods_modify(goods_code):
     return jsonify(success=True, goods_code=goods_code)
 
 
-@app.route('/admin/goods/<goods_code>/delete', methods=["DELETE"])
+@app.route('/api/admin/goods/<goods_code>/delete', methods=["DELETE"])
 @admin_required()
 def admin_goods_delete(goods_code):
     goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
@@ -206,7 +208,7 @@ def admin_goods_delete(goods_code):
     return jsonify(success=True, goods_code=goods_code)
 
 
-@app.route('/admin/goods', methods=["GET"])
+@app.route('/api/admin/goods', methods=["GET"])
 @admin_required()
 def admin_goods_list():
     query_str = request.args.get('query')
@@ -243,7 +245,7 @@ def admin_goods_list():
     return jsonify(success=True, data=resp)
 
 
-@app.route('/admin/goods/<goods_code>', methods=["GET"])
+@app.route('/api/admin/goods/<goods_code>', methods=["GET"])
 @admin_required()
 def admin_goods_view(goods_code):
     query_res = db.session.execute(
@@ -265,7 +267,7 @@ def admin_goods_view(goods_code):
     })
 
 
-@app.route("/admin/goods/<goods_code>/img/<img_path>")
+@app.route("/api/admin/goods/<goods_code>/img/<img_path>")
 @admin_required()
 def admin_goods_img_view(goods_code, img_path):
     mime, _ = mimetypes.guess_type(img_path)
@@ -277,7 +279,7 @@ def admin_goods_img_view(goods_code, img_path):
         return placeholder_img('500x500')
 
 
-@app.route("/carts")
+@app.route("/api/carts")
 @jwt_required()
 def carts():
     current_user = get_jwt_identity()
@@ -298,7 +300,7 @@ def carts():
     return jsonify(success=True, data=items)
 
 
-@app.route("/carts", methods=["POST"])
+@app.route("/api/carts", methods=["POST"])
 @jwt_required()
 def carts_add():
     req_json = request.get_json()
@@ -326,7 +328,7 @@ def carts_add():
     return jsonify(success=True)
 
 
-@app.route("/carts/<goods_code>", methods=["PUT"])
+@app.route("/api/carts/<goods_code>", methods=["PUT"])
 @jwt_required()
 def carts_modify(goods_code):
     req_json = request.get_json()
@@ -351,7 +353,7 @@ def carts_modify(goods_code):
     return jsonify(success=True)
 
 
-@app.route("/carts/<goods_code>", methods=["DELETE"])
+@app.route("/api/carts/<goods_code>", methods=["DELETE"])
 @jwt_required()
 def carts_delete(goods_code):
     cart_goods = db.session.execute(
@@ -368,7 +370,7 @@ def carts_delete(goods_code):
     return jsonify(success=True)
 
 
-@app.route("/myinfo")
+@app.route("/api/myinfo")
 @jwt_required()
 def myinfo_get():
     current_user = get_jwt_identity()
@@ -387,7 +389,7 @@ def myinfo_get():
     return jsonify(success=True, **user_data)
 
 
-@app.route("/myinfo", methods=["PUT"])
+@app.route("/api/myinfo", methods=["PUT"])
 @jwt_required()
 def myinfo_modify():
     current_user = get_jwt_identity()
@@ -435,7 +437,7 @@ def myinfo_modify():
     return jsonify(success=True)
 
 
-@app.route("/myinfo/orders")
+@app.route("/api/myinfo/orders")
 @jwt_required()
 def myinfo_orders():
     current_user = get_jwt_identity()
@@ -465,7 +467,7 @@ def myinfo_orders():
     return jsonify(success=True, data=resp)
 
 
-@app.route("/myinfo/orders/latest")
+@app.route("/api/myinfo/orders/latest")
 @jwt_required()
 def myinfo_orders_latest():
     current_user = get_jwt_identity()
@@ -485,7 +487,7 @@ def myinfo_orders_latest():
     return jsonify(success=True, data=data)
 
 
-@app.route("/myinfo/orders/<order_id>")
+@app.route("/api/myinfo/orders/<order_id>")
 @jwt_required()
 def myinfo_orders_detail(order_id):
     order_record:  Orders = db.session.execute(
@@ -523,7 +525,7 @@ def myinfo_orders_detail(order_id):
     return jsonify(success=True, data=data), 200
 
 
-@app.route("/goods/<goods_code>/img/<img_path>")
+@app.route("/api/goods/<goods_code>/img/<img_path>")
 def goods_img_view(goods_code, img_path):
     mime, _ = mimetypes.guess_type(img_path)
 
@@ -534,7 +536,7 @@ def goods_img_view(goods_code, img_path):
         return placeholder_img('500x500')
 
 
-@app.route("/goods")
+@app.route("/api/goods")
 def goods_list():
     query_str = request.args.get('keyword')
 
@@ -569,7 +571,7 @@ def goods_list():
     return jsonify(success=True, data=resp)
 
 
-@app.route("/goods/<goods_code>")
+@app.route("/api/goods/<goods_code>")
 def goods_detail(goods_code):
     query_res = db.session.execute(
         db.select(Goods).filter(Goods.goods_code == goods_code)).first()
@@ -587,3 +589,43 @@ def goods_detail(goods_code):
         'goods_description': row.goods_description,
         'created_date': row.created_date.strftime("%Y%m%d %H:%M")
     })
+
+
+@app.route("/api/orders", methods=["POST"])
+@jwt_required()
+def order():
+    current_user = get_jwt_identity()
+
+    req_json = request.get_json()
+
+    v = Validator(order_schema)
+
+    if not v.validate(req_json):
+        return jsonify(success=False), 400
+
+    ship_to_info = req_json.get('ship_to')
+
+    # 주문 정보 입력
+    order_record = Orders()
+    order_record.order_str_id = f'GD{uuid.uuid4()}'
+    order_record.username = current_user
+    order_record.order_date = db.func.now()
+    order_record.ship_to_name = ship_to_info.get('name')
+    order_record.ship_to_phone = ship_to_info.get('phone')
+    order_record.ship_to_addresses = ship_to_info.get('addresses')
+    order_record.ship_to_postcode = ship_to_info.get('post_code')
+    order_record.order_status = '결제중'
+    db.session.add(order_record)
+
+    # 주문 상세 정보 입력(주문 제품)
+    for goods in req_json.get('items', []):
+        record = OrdersItem()
+        record.order_str_id = order_record.order_str_id
+        record.goods_code = goods.get('goods_code')
+        record.goods_price = goods.get('goods_price')
+        record.goods_cnt = goods.get('goods_cnt')
+        db.session.add(record)
+
+    db.session.commit()
+
+    return jsonify(success=True)

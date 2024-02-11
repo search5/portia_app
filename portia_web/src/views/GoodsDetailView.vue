@@ -3,7 +3,7 @@ import {defineComponent} from 'vue'
 import FooterView from "../components/FooterView.vue";
 import TopMenuView from "../components/TopMenuView.vue";
 import {range} from "lodash-es";
-import {number_format} from "../lib";
+import {http_inst, number_format} from "../lib";
 import axios from "axios";
 
 export default defineComponent({
@@ -23,12 +23,11 @@ export default defineComponent({
     number_format,
     range,
     basket_add () {
-      // TODO 로그인 토큰 확인(이것만 해결하면...)
-      axios.post("/api/carts", {
+      http_inst.post("/api/carts", {
           "goods_code": this.item.goods_code,
           "goods_cnt": this.quantity
       }).then(result => {
-        alert(this.item.goods_name + ' ' + this.quantity + '개를 장바구니에 담았습니다')
+        alert('[' + this.item.goods_name + '] ' + this.quantity + '개를 장바구니에 담았습니다')
       }).catch(error => {
         alert('상품을 장바구니에 담던 중 오류가 발생했습니다')
       })

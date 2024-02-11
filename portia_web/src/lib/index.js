@@ -1,4 +1,22 @@
 const format_obj = new Intl.NumberFormat()
+import axios from 'axios';
+
+const http_inst = axios.create();
+
+http_inst.interceptors.request.use(config => {
+	// Do something before request is sent
+	const accessToken = localStorage.getItem('access_token');
+	// access 토큰을 가져오는 함수
+	if (accessToken) {
+		config.headers['Authorization'] = 'Bearer ' + accessToken;
+	}
+
+	return config;
+},
+(error) => {
+	// Do something with request error
+	return Promise.reject(error);
+})
 
 function number_format(value) {
   return format_obj.format(value)
@@ -28,4 +46,4 @@ function isPositiveInteger(n) {
     return 0 === n % (!isNaN(parseFloat(n)) && 0 <= ~~n);
 }
 
-export { number_format, paginate, isPositiveInteger }
+export { number_format, paginate, isPositiveInteger, http_inst }

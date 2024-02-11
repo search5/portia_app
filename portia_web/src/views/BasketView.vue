@@ -2,32 +2,21 @@
 import {defineComponent} from 'vue'
 import TopMenuView from "../components/TopMenuView.vue";
 import FooterView from "../components/FooterView.vue";
-import {number_format} from "../lib";
+import {http_inst, number_format} from "../lib";
 import {forEach, remove} from "lodash-es";
 
 export default defineComponent({
   name: "BasketView",
   components: {FooterView, TopMenuView},
   data: () => ({
-    cart_items: [
-      {
-        uuid: '0d41659a-c26d-45b8-b5df-bf86ac4817ab',
-        thumbnail: '/api/placeholder/120x80',
-        goods_item: {
-          goods_name: '상품 1',
-          goods_description: '상품이 좋아요!',
-          price: 30000
-        },
-        goods_cnt: 1
-      }
-    ]
+    cart_items: []
   }),
   computed: {
     total_money () {
       let total_value = 0
 
       forEach(this.cart_items, (value) => {
-        total_value = value.goods_item.price * value.goods_cnt
+        total_value = value.price * value.cart_cnt
       });
 
       return total_value
@@ -45,22 +34,34 @@ export default defineComponent({
         // form.delete_goods_id.value = goods_id;
         // form.submit();
         // TODO: 서버 측 삭제
-        remove(this.cart_items, (n) => {
-          return n.uuid === item.uuid
+        http_inst.delete('/api/carts/' + item.goods_code).then(result => {
+          remove(this.cart_items, (n) => {
+            return n.id === item.id
+          })
+        }).catch(error => {
+          alert('서버에서 에러가 발생했습니다')
         })
       }
     },
     goods_quantity_adjuest(action, item) {
       if (action ===  'plus') {
-        item.goods_cnt += 1;
+        item.cart_cnt += 1;
       } else {
-        if (item.goods_cnt > 1) {
-          item.goods_cnt -= 1;
+        if (item.cart_cnt > 1) {
+          item.cart_cnt -= 1;
         } else {
           alert('최소 1개는 구매해야 합니다');
         }
       }
     }
+  },
+  mounted () {
+    http_inst.get('/api/carts').then(result => {
+      const response_data = result.data
+      this.cart_items = response_data.data
+    }).catch(error => {
+      alert('장바구니 정보를 불러오는데 실패했습니다')
+    })
   }
 })
 </script>
@@ -83,23 +84,23 @@ export default defineComponent({
             <!-- PRODUCT -->
             <div class="row" :key="index" v-for="(item, index) in cart_items">
               <div class="col-12 col-sm-12 col-md-2 text-center">
-                <img class="img-responsive" :src="item.thumbnail" alt="prewiew" width="120" height="80">
+                <img class="img-responsive" :src="item.goods_photo_url" alt="preview" width="120" height="80">
               </div>
               <div class="col-12 text-sm-center col-sm-12 text-md-start col-md-6">
-                <h4 class="product-name"><strong>{{ item.goods_item.goods_name }}</strong></h4>
+                <h4 class="product-name"><strong>{{ item.goods_name }}</strong></h4>
                 <h4>
-                  <small>{{ item.goods_item.goods_description }}</small>
+                  <small>{{ item.goods_description }}</small>
                 </h4>
               </div>
               <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-end row">
                 <div class="col-3 col-sm-3 col-md-6 text-md-end" style="padding-top: 5px">
-                  <h6><strong>{{ item.goods_item.price }} <span class="text-muted">x</span></strong></h6>
+                  <h6><strong>{{ number_format(item.price) }} <span class="text-muted">x</span></strong></h6>
                 </div>
                 <div class="col-4 col-sm-4 col-md-4">
-                  <input type="hidden" name="goods_id" value="{ item.goods_item.goods_code }}">
+                  <input type="hidden" name="goods_id" v-model="item.goods_code">
                   <div class="quantity">
                     <input type="button" value="+" class="plus" @click="goods_quantity_adjuest('plus', item)">
-                    <input type="number" step="1" max="99" min="1" v-model="item.goods_cnt" title="Qty" class="qty"
+                    <input type="number" step="1" max="99" min="1" v-model="item.cart_cnt" title="Qty" class="qty"
                            size="4" name="quantity">
                     <input type="button" value="-" class="minus" @click="goods_quantity_adjuest('minus', item)">
                   </div>

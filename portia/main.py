@@ -288,10 +288,11 @@ def carts():
     )
 
     items = [{
+        'id': item[0].id,
         'goods_code': item[1].goods_code,
         'goods_name': item[1].goods_name,
         'price': item[1].price,
-        'goods_photo': item[1].goods_photo,
+        'goods_photo_url': url_for('goods_img_view', goods_code=item[1].goods_code, img_path=item[1].goods_photo or ''),
         'goods_description': item[1].goods_description,
         'cart_cnt': item[0].goods_cnt
     } for item in records]

@@ -5,33 +5,18 @@ import FooterView from "../components/FooterView.vue";
 
 import { Carousel } from 'bootstrap';
 import {range} from "lodash-es";
-import {number_format} from "../lib";
 import {mapActions} from "pinia";
 import {useUsersStore} from "../stores/users";
+import GoodsListItem from "../components/GoodsListItem.vue";
 
 export default defineComponent({
   name: "IndexView",
-  components: {FooterView, TopMenuView},
+  components: {GoodsListItem, FooterView, TopMenuView},
   data: () => ({
     carousel_images: [
       {src: '/api/placeholder/800x400', alt: '1'},
       {src: '/api/placeholder/800x400', alt: '2'},
       {src: '/api/placeholder/800x400', alt: '3'}
-    ],
-    goods: [
-      {
-        id: 1,
-        thumbnail: '/api/placeholder/700x400',
-        goods_name: '상품 1',
-        price: 30000,
-        goods_description: '올바른 상품입니다'
-      }, {
-        id: 2,
-        thumbnail: '/api/placeholder/700x400',
-        goods_name: '상품 2',
-        price: 28000,
-        goods_description: '잘나가는 책입니다'
-      }
     ],
     input_data: {
       username: '',
@@ -39,7 +24,6 @@ export default defineComponent({
     }
   }),
   methods: {
-    number_format,
     range (value) {
       return range(value)
     },
@@ -67,6 +51,9 @@ export default defineComponent({
   mounted() {
     // const carousel = new Carousel('#carouselExampleControls')
     // console.log(carousel)
+
+    // TODO
+    // 상품 목록 가져오기
   }
 })
 </script>
@@ -126,22 +113,7 @@ export default defineComponent({
             </button>
           </div>
 
-          <div class="row">
-
-            <div class="col-lg-4 col-md-6 mb-4" :key="index" v-for="(item, index) in goods">
-              <div class="card h-100">
-                <a href="#"><img class="card-img-top" :src="item.thumbnail" alt=""></a>
-                <div class="card-body">
-                  <h4 class="card-title">
-                    <RouterLink :to="{name: 'goods_view', params: {id: item.id}}">{{ item.goods_name }}</RouterLink>
-                  </h4>
-                  <h5>{{ number_format(item.price) }}</h5>
-                  <p class="card-text">{{ item.goods_description }}</p>
-                </div>
-                <div class="card-footer"></div>
-              </div>
-            </div>
-          </div>
+          <GoodsListItem limit="6"></GoodsListItem>
           <!-- /.row -->
 
         </div>

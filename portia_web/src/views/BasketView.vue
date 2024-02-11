@@ -96,7 +96,7 @@ export default defineComponent({
                   <h6><strong>{{ item.goods_item.price }} <span class="text-muted">x</span></strong></h6>
                 </div>
                 <div class="col-4 col-sm-4 col-md-4">
-                  <input type="hidden" name="goods_id" value="{ item.goods_item.id }}">
+                  <input type="hidden" name="goods_id" value="{ item.goods_item.goods_code }}">
                   <div class="quantity">
                     <input type="button" value="+" class="plus" @click="goods_quantity_adjuest('plus', item)">
                     <input type="number" step="1" max="99" min="1" v-model="item.goods_cnt" title="Qty" class="qty"

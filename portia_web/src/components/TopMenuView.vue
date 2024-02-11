@@ -21,10 +21,16 @@ export default defineComponent({
       } else {
         this.$router.go(0)
       }
+    },
+    location_active(dest_location) {
+      return location.href.endsWith(dest_location)
     }
   },
   computed: {
-    ...mapActions(useUsersStore, ['is_login'])
+    ...mapActions(useUsersStore, ['is_login']),
+    username () {
+      return localStorage.getItem('username')
+    }
   }
 })
 </script>
@@ -37,24 +43,26 @@ export default defineComponent({
     </a>
 
     <ul class="nav nav-pills">
-      <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">처음 화면</a></li>
       <li class="nav-item">
-        <RouterLink :to="{name: 'goods_list'}" class="nav-link">상품 목록</RouterLink>
+        <a href="/" class="nav-link" :class="{active: location_active('/') }">처음 화면</a>
+      </li>
+      <li class="nav-item">
+        <RouterLink :to="{name: 'goods_list'}" class="nav-link" :class="{active: location_active('/goods') }">상품 목록</RouterLink>
       </li>
       <li class="nav-item" v-if="!is_login">
-        <RouterLink :to="{name: 'portia_join'}" class="nav-link">회원 가입</RouterLink>
+        <RouterLink :to="{name: 'portia_join'}" class="nav-link" :class="{active: location_active('/join_member') }">회원 가입</RouterLink>
       </li>
       <li class="nav-item" v-if="!is_login">
-        <RouterLink :to="{name: 'portia_login'}" class="nav-link">로그인</RouterLink>
+        <RouterLink :to="{name: 'portia_login'}" class="nav-link" :class="{active: location_active('/login') }">로그인</RouterLink>
       </li>
       <li class="nav-item" v-if="is_login">
-        <RouterLink :to="{name: 'mypage'}" class="nav-link">마이페이지</RouterLink>
+        <RouterLink :to="{name: 'mypage'}" class="nav-link" :class="{active: location_active('/mypage') }">마이페이지</RouterLink>
       </li>
       <li class="nav-item" v-if="is_login">
-        <a href="#" @click="portia_logout" class="nav-link">로그아웃</a>
+        <a href="#" @click="portia_logout" class="nav-link">{{ username }}님 로그아웃</a>
       </li>
       <li class="nav-item" v-if="is_login">
-        <RouterLink :to="{name: 'basket_list'}" class="nav-link">장바구니</RouterLink>
+        <RouterLink :to="{name: 'basket_list'}" class="nav-link" :class="{active: location_active('/basket') }">장바구니</RouterLink>
       </li>
     </ul>
   </header>

@@ -236,7 +236,7 @@ def admin_goods_list():
             'goods_code': row.goods_code,
             'goods_name': row.goods_name,
             'price': row.price,
-            'goods_photo': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
+            'goods_photo_url': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
             'goods_cnt': row.goods_cnt,
             'goods_description': row.goods_description,
             'created_date': row.created_date.strftime("%Y%m%d %H:%M")
@@ -259,7 +259,6 @@ def admin_goods_view(goods_code):
         'goods_code': row.goods_code,
         'goods_name': row.goods_name,
         'price': row.price,
-        'goods_photo': row.goods_photo,
         'goods_photo_url': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
         'goods_cnt': row.goods_cnt,
         'goods_description': row.goods_description,
@@ -539,6 +538,7 @@ def goods_img_view(goods_code, img_path):
 @app.route("/api/goods")
 def goods_list():
     query_str = request.args.get('keyword')
+    limit = request.args.get('limit', 9, type=int)
 
     query = db.select(Goods)
     if query_str:
@@ -547,7 +547,7 @@ def goods_list():
     query = query.order_by(db.desc(Goods.created_date))
 
     try:
-        page = db.paginate(query, per_page=10)
+        page = db.paginate(query, per_page=limit)
     except Exception as e:
         return jsonify(success=False, message=str(e)), 400
 
@@ -562,7 +562,7 @@ def goods_list():
             'goods_code': row.goods_code,
             'goods_name': row.goods_name,
             'price': row.price,
-            'goods_photo': url_for('goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
+            'goods_photo_url': url_for('goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
             'goods_cnt': row.goods_cnt,
             'goods_description': row.goods_description,
             'created_date': row.created_date.strftime("%Y%m%d %H:%M")
@@ -583,7 +583,6 @@ def goods_detail(goods_code):
         'goods_code': row.goods_code,
         'goods_name': row.goods_name,
         'price': row.price,
-        'goods_photo': row.goods_photo,
         'goods_photo_url': url_for('goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
         'goods_cnt': row.goods_cnt,
         'goods_description': row.goods_description,

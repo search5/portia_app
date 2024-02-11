@@ -11,37 +11,33 @@ export default defineComponent({
   components: {FooterView, TopMenuView},
   data: () => ({
     item: {
-      id: -1,
-      big_image: '',
+      goods_code: -1,
+      goods_photo_url: '',
       goods_name: '',
       price: 0,
       goods_description: ''
-    }
+    },
+    quantity: 1
   }),
   methods: {
     number_format,
     range,
     basket_add () {
-      // var form = document.querySelector("form")
-      // form.action = "/basket/add";
-      // form.submit();
-      // TODO
+      // TODO 로그인 토큰 확인(이것만 해결하면...)
+      axios.post("/api/carts", {
+          "goods_code": this.item.goods_code,
+          "goods_cnt": this.quantity
+      }).then(result => {
+        alert(this.item.goods_name + ' ' + this.quantity + '개를 장바구니에 담았습니다')
+      }).catch(error => {
+        alert('상품을 장바구니에 담던 중 오류가 발생했습니다')
+      })
     }
   },
   mounted() {
     const goods_code = this.$route.params.id
+
     axios.get('/api/goods/' + goods_code).then(result => {
-      // TODO Success
-      /*{
-          "created_date": "20231205 08:21",
-          "goods_cnt": 1,
-          "goods_code": "GDc3d4badd-3328-4a98-a80d-f57aaad08a0b",
-          "goods_description": "상품 2번 등록 테스트",
-          "goods_name": "상품 2",
-          "goods_photo": null,
-          "goods_photo_url": "/api/goods/GDc3d4badd-3328-4a98-a80d-f57aaad08a0b/img/",
-          "price": 30000
-      }*/
       this.item = result.data
     }).catch(error => {
       alert('상품 정보를 받아오던 중 오류가 발생했습니다')
@@ -93,7 +89,7 @@ export default defineComponent({
                         <dl class="param param-inline">
                           <dt>Quantity: </dt>
                           <dd>
-                            <input class="form-control" type="number" min="1" :max="item.goods_cnt"  name="quantity" value="1">
+                            <input class="form-control" type="number" min="1" :max="item.goods_cnt"  name="quantity" v-model="quantity">
                           </dd>
                         </dl>  <!-- item-property .// -->
                       </div> <!-- col.// -->

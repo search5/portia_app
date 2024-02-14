@@ -16,7 +16,7 @@ export default defineComponent({
       let total_value = 0
 
       forEach(this.cart_items, (value) => {
-        total_value = value.price * value.cart_cnt
+        total_value += value.price * value.cart_cnt
       });
 
       return total_value
@@ -30,10 +30,6 @@ export default defineComponent({
     },
     basket_delete(item) {
       if (confirm("장바구니에서 삭제하시겠습니까?")) {
-        // form.action = "/basket/delete";
-        // form.delete_goods_id.value = goods_id;
-        // form.submit();
-        // TODO: 서버 측 삭제
         http_inst.delete('/api/carts/' + item.goods_code).then(result => {
           remove(this.cart_items, (n) => {
             return n.id === item.id
@@ -53,6 +49,10 @@ export default defineComponent({
           alert('최소 1개는 구매해야 합니다');
         }
       }
+
+      http_inst.put('/api/carts/' + item.goods_code, {goods_cnt: item.cart_cnt}).catch(error => {
+        alert('서버에서 에러가 발생했습니다')
+      })
     }
   },
   mounted () {
@@ -82,7 +82,7 @@ export default defineComponent({
           <form>
             <input type="hidden" name="delete_goods_id" value="">
             <!-- PRODUCT -->
-            <div class="row" :key="index" v-for="(item, index) in cart_items">
+            <div class="row mb-2" :key="index" v-for="(item, index) in cart_items">
               <div class="col-12 col-sm-12 col-md-2 text-center">
                 <img class="img-responsive" :src="item.goods_photo_url" alt="preview" width="120" height="80">
               </div>

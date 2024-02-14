@@ -22,7 +22,14 @@ export default {
     payment_method: 'bank'
   }),
   methods: {
-    number_format
+    number_format,
+    payment_process () {
+      alert('결제를 진행합니다')
+      // TODO
+      // 0. 그 전에 백엔드쪽 기능을 살펴봐야 한다.
+      // 1. DB에 집어넣는다.
+      // 2. 주문이 완료되었음을 알리고 내 주문 목록으로 이동한다.
+    }
   },
   computed: {
     total_money () {
@@ -162,7 +169,7 @@ export default {
 
         <div class="card-footer">
           <div class="fa-pull-right" style="margin: 10px">
-            <button class="btn btn-success">결제 진행</button>
+            <button class="btn btn-success" @click="payment_process">결제 진행</button>
           </div>
         </div>
       </div>

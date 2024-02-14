@@ -27,10 +27,6 @@ export default {
       <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
     </div>
     <div class="mb-3">
-      <label for="exampleFormControlTextarea1" class="form-label">랭킹</label>
-      <input type="number" min="0" max="5" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-    </div>
-    <div class="mb-3">
       <label for="exampleFormControlTextarea1" class="form-label">설명</label>
       <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
     </div>

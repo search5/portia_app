@@ -24,10 +24,6 @@ export default defineComponent({
   },
   methods: {
     number_format,
-    payment() {
-      form.action = "/order";
-      form.submit();
-    },
     basket_delete(item) {
       if (confirm("장바구니에서 삭제하시겠습니까?")) {
         http_inst.delete('/api/carts/' + item.goods_code).then(result => {
@@ -117,7 +113,7 @@ export default defineComponent({
         </div>
         <div class="card-footer">
           <div class="fa-pull-right" style="margin: 10px">
-            <a href="#" @click="payment" class="btn btn-success fa-pull-right">결제하기</a>
+            <RouterLink :to="{ name: 'payment_view' }" class="btn btn-success fa-pull-right">결제하기</RouterLink>
             <div class="fa-pull-right" style="margin: 5px">
               Total price: <b>{{ number_format(total_money) }}</b>
             </div>

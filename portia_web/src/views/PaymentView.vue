@@ -13,22 +13,34 @@ export default {
       name: '',
       phone: ''
     },
-    receiver: {
+    ship_to: {
       name: '',
       phone: '',
-      post: '',
-      addr: ''
+      post_code: '',
+      addresses: ''
     },
     payment_method: 'bank'
   }),
   methods: {
     number_format,
     payment_process () {
-      alert('결제를 진행합니다')
-      // TODO
-      // 0. 그 전에 백엔드쪽 기능을 살펴봐야 한다.
-      // 1. DB에 집어넣는다.
-      // 2. 주문이 완료되었음을 알리고 내 주문 목록으로 이동한다.
+      let post_order_data = {items: [], ship_to: {}}
+      Object.assign(post_order_data.ship_to, this.ship_to)
+
+      this.cart_items.forEach((element) => {
+        post_order_data.items.push({
+          goods_code: element.goods_code,
+          goods_cnt: element.cart_cnt,
+          goods_price: element.price
+        })
+      });
+
+      http_inst.post('/api/orders', post_order_data).then(result => {
+        alert('결제가 성공적으로 완료되었습니다')
+        this.$router.push({name: 'myorder'})
+      }).catch(error => {
+        alert('결제 중 오류가 발생했습니다')
+      })
     }
   },
   computed: {
@@ -124,7 +136,7 @@ export default {
               <div class="row mb-3">
                 <label for="received_name" class="col-form-label col-3">이름</label>
                 <div class="col-9">
-                  <input type="text" class="form-control" id="received_name" v-model="receiver.name">
+                  <input type="text" class="form-control" id="received_name" v-model="ship_to.name">
                 </div>
               </div>
             </div>
@@ -132,7 +144,7 @@ export default {
               <div class="row mb-3">
                 <label for="received_phone" class="col-form-label col-3">전화번호</label>
                 <div class="col-9">
-                  <input type="text" class="form-control" id="received_phone" v-model="receiver.phone">
+                  <input type="text" class="form-control" id="received_phone" v-model="ship_to.phone">
                 </div>
               </div>
             </div>
@@ -140,13 +152,13 @@ export default {
           <div class="row mb-3">
             <label for="received_post" class="col-form-label col-2">우편번호</label>
             <div class="col-10">
-              <input type="text" class="form-control" id="received_post" v-model="receiver.post">
+              <input type="text" class="form-control" id="received_post" v-model="ship_to.post_code">
             </div>
           </div>
           <div class="row mb-3">
             <label for="received_addr" class="col-form-label col-2">주소</label>
             <div class="col-10">
-              <input type="text" class="form-control" id="received_addr" v-model="receiver.addr">
+              <input type="text" class="form-control" id="received_addr" v-model="ship_to.addresses">
             </div>
           </div>
 

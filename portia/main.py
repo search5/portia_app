@@ -370,6 +370,15 @@ def carts_delete(goods_code):
     return jsonify(success=True)
 
 
+@app.route("/api/carts", methods=["DELETE"])
+@jwt_required()
+def carts_delete_all():
+    Basket.query.filter(Basket.username == get_jwt_identity()).delete()
+    db.session.commit()
+
+    return jsonify(success=True)
+
+
 @app.route("/api/myinfo")
 @jwt_required()
 def myinfo_get():

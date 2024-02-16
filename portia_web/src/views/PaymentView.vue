@@ -37,7 +37,10 @@ export default {
 
       http_inst.post('/api/orders', post_order_data).then(result => {
         alert('결제가 성공적으로 완료되었습니다')
-        this.$router.push({name: 'myorder'})
+        this.$router.push({name: 'myorder', query: { page: 1 } })
+
+        // 장바구니를 비워준다.
+        http_inst.delete('/api/carts')
       }).catch(error => {
         alert('결제 중 오류가 발생했습니다')
       })

@@ -376,11 +376,12 @@ def myinfo_get():
     current_user = get_jwt_identity()
 
     record = db.session.execute(db.select(User).filter(User.username == current_user)).scalar_one()
-    user_delivery_addresses = record.addresses[0] if record.addresses else dict()
+    user_delivery_addresses = record.addresses[0].todict() if record.addresses else dict()
 
     user_data = dict(
         real_name=record.name,
         real_email=record.email,
+        real_phone=record.phone,
         post_code=user_delivery_addresses.get('postcode', ''),
         addresses=user_delivery_addresses.get('address1', ''),
         detail_address=user_delivery_addresses.get('address2', '')

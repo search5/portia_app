@@ -55,11 +55,22 @@ export default {
     }
   },
   mounted () {
+    // 상품 정보 불러오기
     http_inst.get('/api/carts').then(result => {
       const response_data = result.data
       this.cart_items = response_data.data
     }).catch(error => {
       alert('장바구니 정보를 불러오는데 실패했습니다')
+    })
+
+    // 주문자 정보 불러오기
+    http_inst.get('/api/myinfo').then(result => {
+      Object.assign(this.sender, {
+        name: result.data.real_name,
+        phone: result.data.real_phone
+      })
+    }).catch(error => {
+      alert('사용자 정보를 불러오는데 실패했습니다')
     })
   }
 }

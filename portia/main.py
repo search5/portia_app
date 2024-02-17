@@ -405,8 +405,15 @@ def myinfo_modify():
     current_user = get_jwt_identity()
 
     req_json = request.get_json()
+    current_password = req_json.get('user_current_password')
 
-    v = Validator(user_modify_schema)
+    validate_schema = user_modify_schema
+    if current_password:
+        del validate_schema['user_current_password']
+        del validate_schema['user_new_password']
+        del validate_schema['user_new_password_confirm']
+
+    v = Validator(validate_schema)
 
     if not v.validate(req_json):
         return jsonify(success=False), 400
@@ -421,19 +428,19 @@ def myinfo_modify():
 
     user_record.name = req_json.get('real_name')
     user_record.email = req_json.get('real_email')
-    user_record.phone = req_json.get('phone')
+    user_record.phone = req_json.get('real_phone')
 
     # check pw
-    current_password = req_json.get('user_current_password').encode('utf-8')
-    new_password = req_json.get('user_current_password').encode('utf-8')
-    new_password_confirm = req_json.get('user_new_password_confirm').encode('utf-8')
+    if current_password:
+        new_password = req_json.get('user_new_password').encode('utf-8')
+        new_password_confirm = req_json.get('user_new_password_confirm').encode('utf-8')
 
-    new_password_equal = new_password == new_password_confirm
+        new_password_equal = new_password == new_password_confirm
 
-    # 사용자가 입력한 비밀번호가 저장되어 있는 비밀번호와 일치하는지 확인될 때만 비밀번호 변경을 수행한다.
-    if bcrypt.checkpw(current_password, user_record.password.encode('utf-8')) and new_password_equal:
-        encrypt_password = bcrypt.hashpw(new_password, bcrypt.gensalt())
-        user_record.password = encrypt_password.decode('utf-8')
+        # 사용자가 입력한 비밀번호가 저장되어 있는 비밀번호와 일치하는지 확인될 때만 비밀번호 변경을 수행한다.
+        if bcrypt.checkpw(current_password, user_record.password.encode('utf-8')) and new_password_equal:
+            encrypt_password = bcrypt.hashpw(new_password, bcrypt.gensalt())
+            user_record.password = encrypt_password.decode('utf-8')
 
     user_delivery_addresses.postcode = req_json.get('post_code')
     user_delivery_addresses.address1 = req_json.get('addresses')
@@ -482,19 +489,21 @@ def myinfo_orders():
 def myinfo_orders_latest():
     current_user = get_jwt_identity()
 
-    order_record = db.session.execute(
-        db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date)).limit(1)
-    ).scalar_one_or_none()
+    order_records = db.session.execute(
+        db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date)).limit(5)
+    ).scalars()
 
-    data = {
-        "uuid": order_record.order_str_id,
-        "title": order_record.order_summary_title,
-        "img": url_for('goods_img_view', **order_record.order_representative_image_info),
-        "price": order_record.order_total_price,
-        "order_date": order_record.order_date.strftime('%Y-%m-%d')
-    }
+    items = []
+    for item in order_records:
+        items.append({
+            "uuid": item.order_str_id,
+            "title": item.order_summary_title,
+            "img": url_for('goods_img_view', **item.order_representative_image_info),
+            "price": item.order_total_price,
+            "order_date": item.order_date.strftime('%Y-%m-%d')
+        })
 
-    return jsonify(success=True, data=data)
+    return jsonify(success=True, items=items)
 
 
 @app.route("/api/myinfo/orders/<order_id>")
@@ -530,7 +539,6 @@ def myinfo_orders_detail(order_id):
         },
         "order_status": order_record.order_status
     }
-    # 결제중 | 결제취소 | 결제완료 | 입금대기 | 입금완료
 
     return jsonify(success=True, data=data), 200
 

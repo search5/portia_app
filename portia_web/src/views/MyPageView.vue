@@ -2,24 +2,23 @@
 import {defineComponent} from 'vue'
 import TopMenuView from "@/components/TopMenuView.vue";
 import FooterView from "@/components/FooterView.vue";
-import {number_format} from "../lib";
+import {http_inst, number_format} from "../lib";
 import MyPageSlot from "../components/MyPageSlot.vue";
 
 export default defineComponent({
   name: "MyPageView",
   methods: {number_format},
   data: () => ({
-    order_items: [
-      {
-        uuid: 'Portia2023AUG171540',
-        title: '잘 나가는 상품 외 1개',
-        img: '/api/placeholder/100x50',
-        price: 30000,
-        order_date: '2023-08-17'
-      }
-    ]
+    order_items: []
   }),
-  components: {MyPageSlot, FooterView, TopMenuView}
+  components: {MyPageSlot, FooterView, TopMenuView},
+  mounted() {
+    http_inst.get('/api/myinfo/orders/latest').then(result => {
+      this.order_items = result.data.items
+    }).catch(error => {
+      alert('최근 구매 정보를 읽어오는데 실패했습니다')
+    })
+  }
 })
 </script>
 
@@ -42,7 +41,7 @@ export default defineComponent({
         <tr :key="index" v-for="(item, index) in order_items">
           <td style="width: 190px;" class="align-middle">{{ item.uuid }}</td>
           <td>
-            <img class="img-thumbnail me-2" :src="item.img">
+            <img class="img-thumbnail me-2" :src="item.img" style="height: 50px;">
             <RouterLink :to="{ name: 'myorder_detail', params: { uuid: item.uuid } }">{{ item.title }}</RouterLink>
           </td>
           <td class="align-middle">{{ number_format(item.price) }}</td>

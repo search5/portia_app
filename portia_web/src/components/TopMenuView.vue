@@ -59,10 +59,10 @@ export default defineComponent({
         <RouterLink :to="{name: 'mypage'}" class="nav-link" :class="{active: location_active('/mypage') }">마이페이지</RouterLink>
       </li>
       <li class="nav-item" v-if="is_login">
-        <a href="#" @click="portia_logout" class="nav-link">{{ username }}님 로그아웃</a>
+        <RouterLink :to="{name: 'basket_list'}" class="nav-link" :class="{active: location_active('/basket') }">장바구니</RouterLink>
       </li>
       <li class="nav-item" v-if="is_login">
-        <RouterLink :to="{name: 'basket_list'}" class="nav-link" :class="{active: location_active('/basket') }">장바구니</RouterLink>
+        <a href="#" @click="portia_logout" class="nav-link">{{ username }}님 로그아웃</a>
       </li>
     </ul>
   </header>

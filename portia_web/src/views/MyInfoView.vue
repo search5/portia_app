@@ -3,14 +3,16 @@ import {defineComponent} from 'vue'
 import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
 import MyPageSlot from "../components/MyPageSlot.vue";
+import {http_inst} from "../lib";
 
 export default defineComponent({
   name: "MyInfoView",
   components: {MyPageSlot, TopMenuView, FooterView},
   data: () => ({
     input_data: {
-      real_name: '홍길동',
-      real_email: 'gdhong@knou.ac.kr',
+      real_name: '',
+      real_email: '',
+      real_phone: '',
       user_current_password: '',
       user_new_password: '',
       user_new_password_confirm: '',
@@ -21,8 +23,38 @@ export default defineComponent({
   }),
   methods: {
     modify () {
-      // TODO
+      let send_data = {
+        real_name: this.input_data.real_name,
+        real_email: this.input_data.real_email,
+        real_phone: this.input_data.real_phone,
+        post_code: this.input_data.post_code,
+        addresses: this.input_data.addresses,
+        detail_address: this.input_data.detail_address
+      }
+
+      // 현재 비밀번호 입력 시
+      if (this.input_data.user_current_password !== '') {
+        Object.assign(send_data, {
+          user_current_password: this.input_data.user_current_password,
+          user_new_password: this.input_data.user_new_password,
+          user_new_password_confirm: this.input_data.user_new_password_confirm
+        })
+      }
+
+      http_inst.put('/api/myinfo', send_data).then(result => {
+        alert('사용자 정보가 수정되었습니다')
+      }).catch(error => {
+        alert('사용자 정보 수정에 실패했습니다')
+      })
     }
+  },
+  mounted() {
+    http_inst.get('/api/myinfo').then(result => {
+      const myinfo = result.data
+      Object.assign(this.input_data, myinfo)
+    }).catch(error => {
+      alert('내 정보를 읽어오는데 실패했습니다')
+    })
   }
 })
 </script>
@@ -44,6 +76,12 @@ export default defineComponent({
               <div class="mb-3 col-md-4">
                 <label for="inputEmail">Email</label>
                 <input type="email" class="form-control form-control-plaintext" readonly id="inputEmail" v-model="input_data.real_email">
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3 col-md-6">
+                <label for="inputPhone">휴대전화</label>
+                <input type="text" class="form-control" id="inputPhone" v-model="input_data.real_phone">
               </div>
             </div>
             <div class="row">

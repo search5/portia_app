@@ -3,7 +3,7 @@ import {defineComponent} from 'vue'
 import FooterView from "@/components/FooterView.vue";
 import TopMenuView from "@/components/TopMenuView.vue";
 import MyPageSlot from "../components/MyPageSlot.vue";
-import {number_format} from "../lib";
+import {http_inst, number_format} from "../lib";
 import {forEach} from "lodash-es";
 
 export default defineComponent({
@@ -11,32 +11,20 @@ export default defineComponent({
   methods: {number_format},
   components: {MyPageSlot, TopMenuView, FooterView},
   data: () => ({
-    order_no: 'ABCD',
-    order_date: '2023-08-21',
-    items: [
-      {
-        goods_name: '상품 1',
-        goods_cnt: 2,
-        goods_price: 30000,
-        goods_total_price: 60000,
-      }, {
-        goods_name: '상품 2',
-        goods_cnt: 2,
-        goods_price: 30000,
-        goods_total_price: 220000,
-      }
-    ],
+    order_no: '',
+    order_date: '',
+    items: [],
     orderers: {
-      name: '홍길동',
-      phone: '010-1234-5678'
+      name: '',
+      phone: ''
     },
     ship_to: {
-      name: '홍길동',
-      phone: '010-1234-5678',
-      addresses: '경기도 고양시 일산서구 일청로',
-      post_code: '10236'
+      name: '',
+      phone: '',
+      addresses: '',
+      post_code: ''
     },
-    order_status: '결제중' // 결제중|결제취소|결제완료|입금대기|입금완료
+    order_status: ''
   }),
   computed: {
     total_price () {
@@ -48,6 +36,21 @@ export default defineComponent({
 
       return total_value
     }
+  },
+  mounted() {
+    const order_id = this.$route.params.uuid
+    http_inst.get('/api/myinfo/orders/' + order_id).then(result => {
+      const order_data = result.data.data
+      this.order_date = order_data.order_date
+      this.order_no = order_data.order_no
+      this.order_status = order_data.order_status
+
+      Object.assign(this.items, order_data.items)
+      Object.assign(this.orderers, order_data.orderers)
+      Object.assign(this.ship_to, order_data.ship_to)
+    }).catch(error => {
+      alert('구매 정보를 읽어오는데 실패했습니다')
+    })
   }
 })
 </script>

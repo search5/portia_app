@@ -23,11 +23,11 @@ export default defineComponent({
       }
     },
     location_active(dest_location) {
-      return location.href.endsWith(dest_location)
+      return location.pathname === dest_location
     }
   },
   computed: {
-    ...mapActions(useUsersStore, ['is_login']),
+    ...mapActions(useUsersStore, ['is_login', 'is_admin']),
     username () {
       return localStorage.getItem('username')
     }
@@ -60,6 +60,9 @@ export default defineComponent({
       </li>
       <li class="nav-item" v-if="is_login">
         <RouterLink :to="{name: 'basket_list'}" class="nav-link" :class="{active: location_active('/basket') }">장바구니</RouterLink>
+      </li>
+      <li class="nav-item" v-if="is_admin">
+        <RouterLink :to="{name: 'admin_goods_list'}" class="nav-link" :class="{active: location_active('/admin/goods') }">관리자</RouterLink>
       </li>
       <li class="nav-item" v-if="is_login">
         <a href="#" @click="portia_logout" class="nav-link">{{ username }}님 로그아웃</a>

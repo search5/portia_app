@@ -59,7 +59,7 @@ export default {
     <div class="row">
       <div class="col-lg-4 col-md-6 mb-4" :key="index" v-for="(item, index) in goods">
         <div class="card h-100">
-          <a href="#"><img class="card-img-top" :src="item.goods_photo_url" alt=""></a>
+          <a href="#"><img class="card-img-top" :src="item.goods_photo_url" alt="" style="height: 233px;"></a>
           <div class="card-body">
             <h4 class="card-title">
               <RouterLink :to="{name: 'goods_view', params: {id: item.goods_code}}">{{ item.goods_name }}</RouterLink>

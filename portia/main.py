@@ -237,6 +237,7 @@ def admin_goods_list():
             'goods_name': row.goods_name,
             'price': row.price,
             'goods_photo_url': url_for('admin_goods_img_view', goods_code=row.goods_code, img_path=row.goods_photo or ''),
+            'goods_photo': row.goods_photo,
             'goods_cnt': row.goods_cnt,
             'goods_description': row.goods_description,
             'created_date': row.created_date.strftime("%Y%m%d %H:%M")
@@ -267,7 +268,6 @@ def admin_goods_view(goods_code):
 
 
 @app.route("/api/admin/goods/<goods_code>/img/<img_path>")
-@admin_required()
 def admin_goods_img_view(goods_code, img_path):
     mime, _ = mimetypes.guess_type(img_path)
 

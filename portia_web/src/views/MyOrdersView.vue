@@ -12,6 +12,13 @@ export default defineComponent({
     number_format,
     page_move (page_no) {
       this.$router.push({name: 'myorder', query: {page: page_no}})
+
+      http_inst.get('/api/myinfo/orders', {params: {page: page_no}}).then(result => {
+        this.order_items = result.data.data.items
+        this.total_page = Math.ceil(result.data.data.total / result.data.data.per_page)
+      }).catch(error => {
+        alert('전체 구매 정보를 읽어오는데 실패했습니다')
+      })
     }
   },
   components: {PaginationItem, MyPageSlot, TopMenuView, FooterView},
@@ -20,12 +27,7 @@ export default defineComponent({
     total_page: 1
   }),
   mounted() {
-    http_inst.get('/api/myinfo/orders').then(result => {
-      this.order_items = result.data.data.items
-      this.total_page = Math.ceil(result.data.data.total / result.data.data.per_page)
-    }).catch(error => {
-      alert('전체 구매 정보를 읽어오는데 실패했습니다')
-    })
+    this.page_move(1)
   }
 })
 </script>

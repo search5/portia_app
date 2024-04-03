@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
@@ -16,7 +16,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-class User(Base):
+class User(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     username: Mapped[str] = mapped_column(db.String(200), unique=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable=False)
@@ -27,14 +27,14 @@ class User(Base):
     join_date: Mapped[Optional[datetime]] = mapped_column()
 
 
-class DeliveryAddresses(Base):
+class DeliveryAddresses(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     username: Mapped[str] = mapped_column(db.String(200), db.ForeignKey('user.username'))
     postcode: Mapped[Optional[str]] = mapped_column(db.String(5))
     address1: Mapped[Optional[str]] = mapped_column(db.String(255))
     address2: Mapped[Optional[str]] = mapped_column(db.String(255))
     created_date: Mapped[Optional[datetime]] = mapped_column()
-    user = db.relationship("User", backref="addresses")
+    user: Mapped["User"] = db.relationship("User", backref="addresses")
 
 
 class Goods(Base):
@@ -48,18 +48,18 @@ class Goods(Base):
     created_date: Mapped[Optional[datetime]] = mapped_column()
 
 
-class Orders(Base):
+class Orders(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     order_str_id: Mapped[str] = mapped_column(db.String(100), unique=True)
     username: Mapped[str] = mapped_column(db.String(200), db.ForeignKey('user.username'))
-    user = db.relationship("User", backref="orders")
+    user: Mapped["User"] = db.relationship("User", backref="orders")
     order_date: Mapped[Optional[datetime]] = mapped_column()
     ship_to_name: Mapped[Optional[str]] = mapped_column(db.String(20))
     ship_to_phone: Mapped[Optional[str]] = mapped_column(db.String(14))
     ship_to_addresses: Mapped[Optional[str]] = mapped_column(db.String(150))
     ship_to_postcode: Mapped[Optional[str]] = mapped_column(db.String(5))
     order_status: Mapped[Optional[str]] = mapped_column(db.String(4), doc='결제 상태')
-    order_items = db.relationship("OrdersItem", order_by="desc(OrdersItem.id)")
+    order_items: Mapped[List["OrdersItem"]] = db.relationship("OrdersItem", order_by="desc(OrdersItem.id)")
 
     @hybrid_property
     def order_summary_title(self):
@@ -80,18 +80,18 @@ class Orders(Base):
         return {"goods_code": order_item.goods_code, "img_path": order_item.goods_photo or ''}
 
 
-class OrdersItem(Base):
+class OrdersItem(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     order_str_id: Mapped[str] = mapped_column(db.String(100), db.ForeignKey('orders.order_str_id'))
     goods_code: Mapped[str] = mapped_column(db.String(255), db.ForeignKey('goods.goods_code'))
-    goods_item = db.relationship("Goods")
+    goods_item: Mapped["Goods"] = db.relationship("Goods")
     goods_price: Mapped[int] = mapped_column(db.Integer)
     goods_cnt: Mapped[int] = mapped_column(db.Integer)
 
 
-class Basket(Base):
+class Basket(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     username: Mapped[Optional[str]] = mapped_column(db.String(200), db.ForeignKey('user.username'))
     goods_code: Mapped[Optional[str]] = mapped_column(db.String(255), db.ForeignKey('goods.goods_code'))
-    goods_item = db.relationship("Goods")
+    goods_item: Mapped["Goods"] = db.relationship("Goods")
     goods_cnt: Mapped[Optional[int]] = mapped_column(db.Integer)

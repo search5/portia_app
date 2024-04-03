@@ -40,7 +40,7 @@ def user_join():
 
     # 기존 사용자 검색 로직 추가
     exists_user = db.session.execute(db.select(User).
-                                     filter(User.username == new_username)).first()
+                                     where(User.username == new_username)).scalar_one_or_none()
     if exists_user:
         return jsonify(success=False), 400
 
@@ -83,13 +83,13 @@ def login():
     password = req_json.get("password", '')
 
     user = db.session.execute(
-        db.select(User).where(User.username == username)).first()
+        db.select(User).where(User.username == username)).scalar_one_or_none()
     password_encoded = password.encode('utf-8')
 
-    if not (user and (bcrypt.checkpw(password_encoded, user[0].password.encode('utf-8')))):
+    if not (user and (bcrypt.checkpw(password_encoded, user.password.encode('utf-8')))):
         return jsonify({"msg": "Bad username or password"}), 401
 
-    access_token = create_access_token(identity=username, additional_claims={'is_admin': user[0].is_admin == "Y"})
+    access_token = create_access_token(identity=username, additional_claims={'is_admin': user.is_admin == "Y"})
     refresh_token = create_refresh_token(identity=username)
 
     return jsonify(access_token=access_token, refresh_token=refresh_token, username=username)
@@ -159,7 +159,7 @@ def admin_goods_img_upload(goods_code):
         save_filename = Path(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4()}{upload_file_ext}')
         upload_file.save(save_filename)
 
-        goods_record = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).first()[0]
+        goods_record = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).scalar_one()
         goods_record.goods_photo = save_filename.name
 
         # 데이터베이스에서 저장된 파일 이름 반영
@@ -181,10 +181,9 @@ def admin_goods_modify(goods_code):
 
     req_json = request.get_json()
 
-    goods = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).first()
+    goods = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).scalar_one_or_none()
     if not goods:
         return jsonify(success=False), 404
-    goods = goods[0]
     goods.goods_name = req_json.get('goods_name')
     goods.price = req_json.get('price', 0)
     goods.goods_cnt = req_json.get('goods_cnt', 0)
@@ -249,11 +248,10 @@ def admin_goods_list():
 @app.route('/api/admin/goods/<goods_code>', methods=["GET"])
 @admin_required()
 def admin_goods_view(goods_code):
-    query_res = db.session.execute(
-        db.select(Goods).where(Goods.goods_code == goods_code)).first()
-    if not query_res:
+    row = db.session.execute(
+        db.select(Goods).where(Goods.goods_code == goods_code)).scalar_one_or_none()
+    if not row:
         return jsonify(success=False), 404
-    row = query_res[0]
 
     return jsonify({
         'id': row.id,
@@ -592,11 +590,10 @@ def goods_list():
 
 @app.route("/api/goods/<goods_code>")
 def goods_detail(goods_code):
-    query_res = db.session.execute(
-        db.select(Goods).where(Goods.goods_code == goods_code)).first()
-    if not query_res:
+    row = db.session.execute(
+        db.select(Goods).where(Goods.goods_code == goods_code)).scalar_one_or_none()
+    if not row:
         return jsonify(success=False), 404
-    row = query_res[0]
 
     return jsonify({
         'goods_code': row.goods_code,

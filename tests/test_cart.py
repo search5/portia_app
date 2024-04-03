@@ -8,9 +8,7 @@ def cleanup_carts(client):
 
     # success data clean
     with app.app_context():
-        r = db.session.query(Basket)
-        for row in r:
-            db.session.delete(row)
+        db.session.execute(db.delete(Basket))
         db.session.commit()
 
 

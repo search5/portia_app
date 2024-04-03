@@ -83,7 +83,7 @@ def login():
     password = req_json.get("password", '')
 
     user = db.session.execute(
-        db.select(User).filter(User.username == username)).first()
+        db.select(User).where(User.username == username)).first()
     password_encoded = password.encode('utf-8')
 
     if not (user and (bcrypt.checkpw(password_encoded, user[0].password.encode('utf-8')))):
@@ -159,7 +159,7 @@ def admin_goods_img_upload(goods_code):
         save_filename = Path(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4()}{upload_file_ext}')
         upload_file.save(save_filename)
 
-        goods_record = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()[0]
+        goods_record = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).first()[0]
         goods_record.goods_photo = save_filename.name
 
         # 데이터베이스에서 저장된 파일 이름 반영
@@ -181,7 +181,7 @@ def admin_goods_modify(goods_code):
 
     req_json = request.get_json()
 
-    goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    goods = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).first()
     if not goods:
         return jsonify(success=False), 404
     goods = goods[0]
@@ -199,10 +199,10 @@ def admin_goods_modify(goods_code):
 @app.route('/api/admin/goods/<goods_code>/delete', methods=["DELETE"])
 @admin_required()
 def admin_goods_delete(goods_code):
-    goods = db.session.execute(db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+    goods = db.session.execute(db.select(Goods).where(Goods.goods_code == goods_code)).scalar_one_or_none()
     if not goods:
         return jsonify(success=False), 404
-    db.session.delete(goods[0])
+    db.session.delete(goods)
     db.session.commit()
 
     return jsonify(success=True, goods_code=goods_code)
@@ -215,8 +215,8 @@ def admin_goods_list():
 
     query = db.select(Goods)
     if query_str:
-        query = query.filter(or_(Goods.goods_name.ilike(f'%{query_str}%'),
-                                 Goods.goods_description.ilike(f'%{query_str}%')))
+        query = query.where(or_(Goods.goods_name.ilike(f'%{query_str}%'),
+                                Goods.goods_description.ilike(f'%{query_str}%')))
     query = query.order_by(db.desc(Goods.created_date))
 
     try:
@@ -250,7 +250,7 @@ def admin_goods_list():
 @admin_required()
 def admin_goods_view(goods_code):
     query_res = db.session.execute(
-        db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+        db.select(Goods).where(Goods.goods_code == goods_code)).first()
     if not query_res:
         return jsonify(success=False), 404
     row = query_res[0]
@@ -284,7 +284,7 @@ def carts():
     current_user = get_jwt_identity()
 
     records = db.session.execute(
-        db.select(Basket, Goods).join(Goods).filter(Basket.username == current_user)
+        db.select(Basket, Goods).join(Goods).where(Basket.username == current_user)
     )
 
     items = [{
@@ -312,7 +312,7 @@ def carts_add():
 
     try:
         db.session.execute(
-            db.select(Goods).filter(Goods.goods_code == req_json.get('goods_code'))
+            db.select(Goods).where(Goods.goods_code == req_json.get('goods_code'))
         ).scalar_one()
     except NoResultFound:
         return jsonify(success=False), 400
@@ -339,8 +339,8 @@ def carts_modify(goods_code):
         return jsonify(success=False), 400
 
     cart_goods = db.session.execute(
-        db.select(Basket).filter(Basket.goods_code == goods_code,
-                                 Basket.username == get_jwt_identity())
+        db.select(Basket).where(Basket.goods_code == goods_code,
+                                Basket.username == get_jwt_identity())
     ).scalar_one_or_none()
 
     if not cart_goods:
@@ -357,8 +357,8 @@ def carts_modify(goods_code):
 @jwt_required()
 def carts_delete(goods_code):
     cart_goods = db.session.execute(
-        db.select(Basket).filter(Basket.goods_code == goods_code,
-                                 Basket.username == get_jwt_identity())
+        db.select(Basket).where(Basket.goods_code == goods_code,
+                                Basket.username == get_jwt_identity())
     ).scalar_one_or_none()
 
     if not cart_goods:
@@ -373,7 +373,7 @@ def carts_delete(goods_code):
 @app.route("/api/carts", methods=["DELETE"])
 @jwt_required()
 def carts_delete_all():
-    Basket.query.filter(Basket.username == get_jwt_identity()).delete()
+    db.session.execute(db.delete(Basket).where(Basket.username == get_jwt_identity()))
     db.session.commit()
 
     return jsonify(success=True)
@@ -384,7 +384,7 @@ def carts_delete_all():
 def myinfo_get():
     current_user = get_jwt_identity()
 
-    record = db.session.execute(db.select(User).filter(User.username == current_user)).scalar_one()
+    record = db.session.execute(db.select(User).where(User.username == current_user)).scalar_one()
     user_delivery_addresses = record.addresses[0].todict() if record.addresses else dict()
 
     user_data = dict(
@@ -418,9 +418,9 @@ def myinfo_modify():
     if not v.validate(req_json):
         return jsonify(success=False), 400
 
-    user_record = db.session.execute(db.select(User).filter(User.username == current_user)).scalar_one()
+    user_record = db.session.execute(db.select(User).where(User.username == current_user)).scalar_one()
     user_delivery_addresses = db.session.execute(
-        db.select(DeliveryAddresses).filter(DeliveryAddresses.username == current_user)).scalar_one_or_none()
+        db.select(DeliveryAddresses).where(DeliveryAddresses.username == current_user)).scalar_one_or_none()
     if not user_delivery_addresses:
         user_delivery_addresses = DeliveryAddresses()
         user_delivery_addresses.username = current_user
@@ -459,7 +459,7 @@ def myinfo_modify():
 def myinfo_orders():
     current_user = get_jwt_identity()
 
-    order_records = db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date))
+    order_records = db.select(Orders).where(Orders.username == current_user).order_by(db.desc(Orders.order_date))
 
     try:
         page = db.paginate(order_records, per_page=10)
@@ -490,7 +490,7 @@ def myinfo_orders_latest():
     current_user = get_jwt_identity()
 
     order_records = db.session.execute(
-        db.select(Orders).filter(Orders.username == current_user).order_by(db.desc(Orders.order_date)).limit(5)
+        db.select(Orders).where(Orders.username == current_user).order_by(db.desc(Orders.order_date)).limit(5)
     ).scalars()
 
     items = []
@@ -510,7 +510,7 @@ def myinfo_orders_latest():
 @jwt_required()
 def myinfo_orders_detail(order_id):
     order_record:  Orders = db.session.execute(
-        db.select(Orders).filter(Orders.order_str_id == order_id)
+        db.select(Orders).where(Orders.order_str_id == order_id)
     ).scalar_one_or_none()
 
     if not order_record:
@@ -561,8 +561,8 @@ def goods_list():
 
     query = db.select(Goods)
     if query_str:
-        query = query.filter(or_(Goods.goods_name.ilike(f'%{query_str}%'),
-                                 Goods.goods_description.ilike(f'%{query_str}%')))
+        query = query.where(or_(Goods.goods_name.ilike(f'%{query_str}%'),
+                                Goods.goods_description.ilike(f'%{query_str}%')))
     query = query.order_by(db.desc(Goods.created_date))
 
     try:
@@ -593,7 +593,7 @@ def goods_list():
 @app.route("/api/goods/<goods_code>")
 def goods_detail(goods_code):
     query_res = db.session.execute(
-        db.select(Goods).filter(Goods.goods_code == goods_code)).first()
+        db.select(Goods).where(Goods.goods_code == goods_code)).first()
     if not query_res:
         return jsonify(success=False), 404
     row = query_res[0]

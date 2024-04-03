@@ -8,14 +8,8 @@ def cleanup_login():
 
     # success data clean
     with app.app_context():
-        r = db.session.query(DeliveryAddresses).filter(DeliveryAddresses.username == 'gdhong@gmail.com').first()
-        if r:
-            db.session.delete(r)
-
-        r = db.session.query(User).filter(User.username == 'gdhong@gmail.com').first()
-        if r:
-            db.session.delete(r)
-
+        db.session.execute(db.delete(DeliveryAddresses).where(DeliveryAddresses.username == 'gdhong@gmail.com'))
+        db.session.execute(db.delete(User).where(User.username == 'gdhong@gmail.com'))
         db.session.commit()
 
 

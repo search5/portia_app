@@ -11,7 +11,7 @@ def cleanup_goods(client):
 
     # success data clean
     with app.app_context():
-        r = db.session.query(Goods)
+        r = db.session.execute(db.select(Goods))
         for row in r:
             if row.goods_code.startswith("TS"):
                 continue

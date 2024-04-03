@@ -148,8 +148,8 @@ def orders_dummy():
     app = create_app()
     with app.app_context():
         order_values = (
-            ('7777578724', 'user@portia.shop', db.func.now(), '이지호', '010-2758-7508', '경기도 고양시', '10346', '배송중'),
-            ('4235538724', 'user@portia.shop', db.func.now(), '이지호', '010-2758-7508', '경기도 고양시', '10346', '배송중')
+            ('7777578724', 'user@portia.shop', db.func.now(), '홍길동', '010-1234-5678', '경기도 고양시', '10346', '배송중'),
+            ('4235538724', 'user@portia.shop', db.func.now(), '홍길동', '010-1234-5678', '경기도 고양시', '10346', '배송중')
         )
 
         order_item_values = (

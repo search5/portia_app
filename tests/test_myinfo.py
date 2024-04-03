@@ -18,16 +18,16 @@ def test_myinfo_modify_success(client, second_authorization):
         "post_code": "10346",
         "addresses": "서울특별시 강서구 염창동",
         "detail_address": "821-40",
-        "phone": "010-1234-5678"
+        "real_phone": "010-1234-5678"
     }, headers=[second_authorization])
     assert res.status_code == 200, res.get_json()
 
 
 def test_myinfo_modify_failure_badinfo(client, second_authorization):
     res = client.put('/api/myinfo', json={
-        "name": "",
-        "password": "",
-        "email": ""
+        "real_name": "",
+        "user_current_password": "",
+        "real_email": ""
     }, headers=[second_authorization])
     assert res.status_code == 400, res.get_json()
 

@@ -37,7 +37,7 @@ class DeliveryAddresses(db.Model):
     user: Mapped["User"] = db.relationship("User", backref="addresses")
 
 
-class Goods(Base):
+class Goods(db.Model):
     id: Mapped[int] = mapped_column(db.Identity(start=1), primary_key=True)
     goods_code: Mapped[str] = mapped_column(db.String(255), unique=True)
     goods_name: Mapped[Optional[str]] = mapped_column(db.String(255))

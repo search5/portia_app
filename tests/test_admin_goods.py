@@ -11,7 +11,7 @@ def cleanup_goods(client):
 
     # success data clean
     with app.app_context():
-        r = db.session.execute(db.select(Goods).where(Goods.goods_code.notlike('TS%')))
+        r = db.session.execute(db.select(Goods).where(Goods.goods_code.notlike('TS%'))).scalars()
         for row in r:
             if row.goods_photo:
                 img = Path(row.goods_photo)
@@ -53,7 +53,7 @@ def test_admin_goods_register_failure(client, admin_authorization):
 def test_admin_goods_image_upload(client, admin_authorization):
     goods_code = goods_register(client, admin_authorization)
 
-    sample_file_name = "sample/savethechildren_202311.jpg"
+    sample_file_name = "sample/sample.jpg"
     post_data = {'goods_photo': (io.BytesIO(open(sample_file_name, "rb").read()), sample_file_name)}
 
     res = client.post(f'/api/admin/goods/{goods_code}/upload', data=post_data,

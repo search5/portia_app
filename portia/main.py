@@ -403,10 +403,10 @@ def myinfo_modify():
     current_user = get_jwt_identity()
 
     req_json = request.get_json()
-    current_password = req_json.get('user_current_password')
+    current_password = req_json.get('user_current_password').encode('utf-8')
 
     validate_schema = user_modify_schema
-    if current_password:
+    if not current_password:
         del validate_schema['user_current_password']
         del validate_schema['user_new_password']
         del validate_schema['user_new_password_confirm']

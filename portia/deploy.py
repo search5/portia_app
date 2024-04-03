@@ -21,7 +21,7 @@ def create_app():
 
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
-    """Management script for the Wiki application."""
+    """Management script for the Portia application."""
 
 
 @cli.command()
@@ -117,7 +117,7 @@ def goods_dummy():
 
     app = create_app()
     with app.app_context():
-        original_file = Path("sample/savethechildren_202311.jpg")
+        original_file = Path("sample/sample.jpg")
 
         for i in range(10):
             save_filename = Path(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4()}.jpg')

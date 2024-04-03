@@ -11,10 +11,8 @@ def cleanup_goods(client):
 
     # success data clean
     with app.app_context():
-        r = db.session.execute(db.select(Goods))
+        r = db.session.execute(db.select(Goods).where(Goods.goods_code.notlike('TS%')))
         for row in r:
-            if row.goods_code.startswith("TS"):
-                continue
             if row.goods_photo:
                 img = Path(row.goods_photo)
                 if img.exists():

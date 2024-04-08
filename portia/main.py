@@ -15,7 +15,7 @@ from portia.models import db, User, DeliveryAddresses, Goods, Basket, Orders, \
     OrdersItem
 from portia.utils.jwt_utils import admin_required
 from portia.utils.placeholder import placeholder_img
-from portia.utils.validator_utils import Validator
+from cerberus import Validator
 from portia.validate_schema import user_join_schema, login_schema, goods_schema, \
     cart_add_schema, cart_modify_schema, \
     user_modify_schema, order_schema

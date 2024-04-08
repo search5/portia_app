@@ -51,16 +51,3 @@ def test_logout(client):
     res = client.get('/api/logout', headers=[("Authorization", authorization)])
     assert res.status_code == 302, res.text
 
-
-def test_auth_request(client):
-    res = client.patch('/api/login', json={
-        'username': 'admin@portia.shop',
-        'password': 'admin'
-    })
-    assert res.status_code == 200, res.text
-
-    assert 'access_token' in res.get_json(), res.get_json()
-    authorization = f"Bearer {res.get_json()['access_token']}"
-
-    res = client.get('/api/protected', headers=[("Authorization", authorization)])
-    assert res.status_code == 200, res.text

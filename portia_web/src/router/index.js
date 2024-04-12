@@ -84,12 +84,6 @@ const router = createRouter({
       beforeEnter: requireAuth()
     },
     {
-      path: '/blank-image/:size',
-      name: 'blank_image',
-      component: () => import('../components/icons/EmptyPicture.vue'),
-      props: true
-    },
-    {
       path: '/admin/goods/register',
       name: 'admin_goods_register',
       component: () => import('../views/admin/GoodsRegisterView.vue'),

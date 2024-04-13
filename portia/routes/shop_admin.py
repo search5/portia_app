@@ -9,7 +9,6 @@ from sqlalchemy import or_
 
 from portia.models import db, Goods
 from portia.utils.jwt_utils import admin_required
-from portia.utils.placeholder import placeholder_img
 from cerberus import Validator
 from portia.validate_schema import goods_schema
 
@@ -40,6 +39,7 @@ def admin_goods_register():
     db.session.commit()
 
     return jsonify(success=True, goods_code=goods.goods_code)
+
 
 @bp.route('/goods/<goods_code>/upload', methods=["POST"])
 @admin_required()

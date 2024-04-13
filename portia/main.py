@@ -8,13 +8,8 @@ import bcrypt
 
 from portia.factory import create_app
 from portia.models import User, Goods
-from portia.utils.placeholder import placeholder_img
 
 app = create_app(os.getenv("PORTIA_CONFIG", "../config.json"))
-
-
-app.add_url_rule('/api/placeholder', defaults={'size': '300x200'}, view_func=placeholder_img)
-app.add_url_rule('/api/placeholder/<size>', view_func=placeholder_img)
 
 
 @app.cli.command()

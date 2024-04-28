@@ -12,7 +12,6 @@ from sqlalchemy.exc import NoResultFound
 
 from portia.models import db, User, DeliveryAddresses, Goods, Basket, Orders, \
     OrdersItem
-from portia.utils.placeholder import placeholder_img
 from cerberus import Validator
 from portia.validate_schema import user_join_schema, login_schema, \
     cart_add_schema, cart_modify_schema, \

@@ -340,17 +340,23 @@ def myinfo_orders_detail(order_id):
     if not order_record:
         return jsonify(success=False), 404
 
+    # 주문 내역으 상세 물품 정보 가져오기
+    order_items = []
+    order_item_q = db.session.execute(db.select(OrdersItem).where(OrdersItem.order_str_id == order_id)).scalars()
+
+    # TODO: goods_code 조인해서 데이터 가져와야 함!
+    for item in order_item_q:
+        order_items.append({
+            "goods_name": "",
+            "goods_cnt": item.goods_cnt,
+            "goods_price": item.goods_price,
+            "goods_total_price": item.goods_cnt * item.goods_price
+        })
+
     data = {
         "order_no": order_record.order_str_id,
         "order_date": order_record.order_date.strftime('%Y-%m-%d'),
-        "items": [
-            {
-                "goods_name": '상품 1',
-                "goods_cnt": 2,
-                "goods_price": 30000,
-                "goods_total_price": 60000,
-            }
-        ],
+        "items": order_items,
         "orderers": {
             "name": order_record.user.name,
             "phone": order_record.user.phone

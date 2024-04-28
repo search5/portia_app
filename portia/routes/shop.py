@@ -380,7 +380,7 @@ def goods_img_view(goods_code, img_path):
     if os.path.exists(serving_img_path):
         return send_file(serving_img_path, mimetype=mime)
     else:
-        return placeholder_img('500x500')
+        return None
 
 
 @bp.route("/goods")

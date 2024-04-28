@@ -341,9 +341,9 @@ def myinfo_orders_detail(order_id):
 
     # 주문 내역으 상세 물품 정보 가져오기
     order_items = []
-    order_item_q = db.session.execute(db.select(OrdersItem).where(OrdersItem.order_str_id == order_id)).scalars()
+    order_item_q = db.session.execute(db.select(OrdersItem).join(Goods, isouter=True)
+                                      .where(OrdersItem.order_str_id == order_id)).scalars()
 
-    # TODO: goods_code 조인해서 데이터 가져와야 함!
     for item in order_item_q:
         order_items.append({
             "goods_name": "",
